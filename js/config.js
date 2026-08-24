@@ -61,6 +61,27 @@ const CONFIG = {
 
 },
 
+    // "Consumo por Artista" (sub-aba nova, dentro de "Consumo") —
+    // mesmo esquema do PIVOT_DATA/PIVOT_UPLOAD acima, planilha e
+    // pasta do Drive separadas. Vazios até a Rachel terminar o
+    // setup (criar a planilha de histórico, publicar como CSV e
+    // implantar o Apps Script — ver scratch-code-gs-artista.gs).
+    ARTIST_DATA: {
+
+    csvUrl: "",
+
+    driveFolderUrl: "https://drive.google.com/drive/folders/1vZebJxkQ9RQtDW0lJ8R8rgiLG83HJeI8?usp=drive_link"
+
+},
+
+    ARTIST_UPLOAD: {
+
+    webAppUrl: "",
+
+    sharedSecret: "DashCM2026ArtistaRachel"
+
+},
+
     HIGHLIGHTS_DATA: {
 
     csvUrl:

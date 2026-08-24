@@ -242,6 +242,15 @@ const PivotDashboard = {
 
             }
 
+            // Com uma playlist só, não faz sentido esconder o
+            // resultado atrás da seta — abre direto. Com 2+, cada
+            // uma continua colapsada por padrão (só a seta abre).
+            if (this._uploads.length === 1) {
+
+                this._uploads[0].expanded = true;
+
+            }
+
             this.renderUploadsList();
 
         });

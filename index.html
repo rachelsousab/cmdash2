@@ -142,7 +142,7 @@
 
     <button class="page-tab"
             data-page="pivot">
-        Consumo de Playlists
+        Consumo
     </button>
 
     <button class="page-tab"
@@ -1734,8 +1734,15 @@
 <div id="page-pivot" class="page">
 
     <div class="section-header">
-        <h2>Consumo de Playlists</h2>
+        <h2>Consumo</h2>
     </div>
+
+    <nav class="marketing-subnav pivot-subnav">
+        <button type="button" class="marketing-subtab active" data-pivot-subtab="playlist">Consumo por playlist</button>
+        <button type="button" class="marketing-subtab" data-pivot-subtab="artista">Consumo por artista</button>
+    </nav>
+
+    <div id="pivot-subpage-playlist" class="marketing-subpage active">
 
     <p class="page-subtitle">
         Envie a planilha de consumo (Excel ou CSV) para gerar automaticamente o cálculo de consumo. Pode enviar
@@ -1808,6 +1815,99 @@
 
     <div id="pivotHistoryList" class="pivot-history-list"></div>
 
+    </div>
+    <!-- fim #pivot-subpage-playlist -->
+
+    <div id="pivot-subpage-artista" class="marketing-subpage">
+
+    <p class="page-subtitle">
+        Envie a planilha de consumo por artista (CSV do Artista Analítico) para gerar automaticamente KPIs, tabelas
+        e gráficos por país, álbum e fonograma. Pode enviar vários artistas de uma vez.
+        <br>
+        <small>*Planilha anexada deve conter as colunas Data, Artista (Business ID), Artista, Álbum, Fonograma
+        (Business ID), Nome do Fonograma, Gravadora, Produto, País, Index e Quantidade.</small>
+    </p>
+
+    <div class="pivot-upload-box">
+
+        <div class="pivot-upload-row">
+
+            <div class="filter">
+                <label>Arquivo(s) (.csv)</label>
+                <input type="file" id="artistFileInput" accept=".xlsx,.xls,.csv" multiple>
+            </div>
+
+            <div class="filter" id="artistEntradaField">
+                <label>Entrada do destaque (opcional)</label>
+                <input type="date" id="artistEntradaInput">
+            </div>
+
+            <div class="filter" id="artistSaidaField">
+                <label>Saída do destaque (opcional)</label>
+                <input type="date" id="artistSaidaInput">
+            </div>
+
+        </div>
+
+        <label class="report-toggle pivot-same-period-toggle">
+            <input type="checkbox" id="artistSamePeriodToggle" checked>
+            Usar mesmo período de destaque para todos
+        </label>
+
+        <div class="artist-tipo-destaque-field" id="artistTipoDestaqueField">
+            <label>Tipo de destaque (opcional, pode marcar mais de um)</label>
+            <div class="artist-tipo-destaque-options">
+                <label class="artist-tipo-destaque-option"><input type="checkbox" value="Banner na TV"> Banner na TV</label>
+                <label class="artist-tipo-destaque-option"><input type="checkbox" value="Trilho"> Trilho</label>
+                <label class="artist-tipo-destaque-option"><input type="checkbox" value="BG"> BG</label>
+                <label class="artist-tipo-destaque-option"><input type="checkbox" value="Papo Claro música"> Papo Claro música</label>
+                <label class="artist-tipo-destaque-option"><input type="checkbox" value="Conteúdo nas redes"> Conteúdo nas redes</label>
+                <label class="artist-tipo-destaque-option"><input type="checkbox" value="Capa de playlist"> Capa de playlist</label>
+            </div>
+            <span class="report-hint">Relação com as ações da Área de Marketing chega numa próxima atualização — por enquanto, fica registrado como texto no histórico.</span>
+        </div>
+
+        <p class="pivot-upload-status" id="artistUploadStatus"></p>
+
+    </div>
+
+    <div id="artistResult" class="pivot-result" style="display:none;">
+
+        <div class="report-actions">
+
+            <button type="button" id="artistSubmitBtn" class="data-table-link-btn">☁️ Salvar no histórico</button>
+
+            <button type="button" id="artistCompareBtn" class="data-table-csv-btn" style="display:none;">📊 Comparar artistas</button>
+
+            <span class="report-count" id="artistSubmitStatus"></span>
+
+        </div>
+
+        <div id="artistCompareSection" class="pivot-compare-section" style="display:none;">
+
+            <div class="pivot-table-scroll" id="artistCompareTableContainer"></div>
+
+            <div class="pivot-chart-canvas-wrap">
+                <canvas id="artistCompareChart"></canvas>
+            </div>
+
+        </div>
+
+        <div id="artistUploadsList" class="pivot-uploads-list"></div>
+
+    </div>
+
+    <div class="section-title" style="margin-top:24px;">
+        <h2>Histórico</h2>
+    </div>
+
+    <input type="text" id="artistHistorySearch" class="social-table-filter" placeholder="Buscar por ID ou nome do artista...">
+
+    <div id="artistHistoryList" class="pivot-history-list"></div>
+
+    </div>
+    <!-- fim #pivot-subpage-artista -->
+
 </div>
 
 <!-- ========================================================= -->
@@ -1879,6 +1979,100 @@
         <div class="maf-form-footer">
             <a id="pivotHistoryOpenDrive" class="data-table-csv-btn" href="#" target="_blank" rel="noopener">Abrir no Drive</a>
             <a id="pivotHistoryDownload" class="data-table-link-btn" href="#" target="_blank" rel="noopener">⬇️ Baixar planilha (.xlsx)</a>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ========================================================= -->
+<!-- MODAL: Consumo por Artista — visualizador do histórico -->
+<!-- ========================================================= -->
+
+<div id="artistHistoryModal" class="drilldown-modal">
+
+    <div class="drilldown-box maf-form-box" style="max-width:1100px;">
+
+        <div class="drilldown-header">
+            <div class="maf-form-header-left">
+                <h3 id="artistHistoryModalTitle">Artista</h3>
+                <span id="artistHistoryModalSubtitle" class="maf-form-subtitle"></span>
+            </div>
+            <button id="artistHistoryModalClose" class="drilldown-close" aria-label="Fechar">✕</button>
+        </div>
+
+        <div class="maf-form-body">
+
+            <section class="kpi-grid pivot-kpi-grid artist-kpi-grid">
+
+                <article class="kpi-card kpi-highlight">
+                    <span>Consumo total</span>
+                    <h2 id="artistHistoryKpiTotal">0</h2>
+                </article>
+
+                <article class="kpi-card">
+                    <span>País de destaque</span>
+                    <h2 id="artistHistoryKpiPais">—</h2>
+                </article>
+
+                <article class="kpi-card">
+                    <span>Consumo durante o destaque</span>
+                    <h2 id="artistHistoryKpiDestaque">—</h2>
+                </article>
+
+                <article class="kpi-card">
+                    <span>Fonograma mais escutado</span>
+                    <h2 id="artistHistoryKpiFonograma">—</h2>
+                </article>
+
+            </section>
+
+            <p class="artist-history-tipo-destaque" id="artistHistoryTipoDestaque"></p>
+
+            <div id="artistHistoryVisual" style="display:none;">
+
+                <div class="pivot-grid">
+                    <div class="card pivot-table-card">
+                        <h3>Consumo por país</h3>
+                        <div class="pivot-table-scroll" id="artistHistoryPaisTableContainer"></div>
+                    </div>
+                    <div class="card pivot-chart-card">
+                        <h3>Consumo por país</h3>
+                        <div class="pivot-chart-canvas-wrap"><canvas id="artistHistoryPaisChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="pivot-grid">
+                    <div class="card pivot-table-card">
+                        <h3>Consumo por álbum</h3>
+                        <div class="pivot-table-scroll" id="artistHistoryAlbumTableContainer"></div>
+                    </div>
+                    <div class="card pivot-chart-card">
+                        <h3>Consumo por álbum</h3>
+                        <div class="pivot-chart-canvas-wrap"><canvas id="artistHistoryAlbumChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="pivot-grid">
+                    <div class="card pivot-table-card">
+                        <h3>Consumo por fonograma</h3>
+                        <div class="pivot-table-scroll" id="artistHistoryFonogramaTableContainer"></div>
+                    </div>
+                    <div class="card pivot-chart-card">
+                        <h3>Consumo por fonograma</h3>
+                        <div class="pivot-chart-canvas-wrap"><canvas id="artistHistoryFonogramaChart"></canvas></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <p class="pivot-history-visual-status" id="artistHistoryVisualStatus"></p>
+
+        </div>
+
+        <div class="maf-form-footer">
+            <a id="artistHistoryOpenDrive" class="data-table-csv-btn" href="#" target="_blank" rel="noopener">Abrir no Drive</a>
+            <a id="artistHistoryDownload" class="data-table-link-btn" href="#" target="_blank" rel="noopener">⬇️ Baixar planilha (.xlsx)</a>
         </div>
 
     </div>
@@ -2377,6 +2571,10 @@
     <script src="js/pivot-data.js"></script>
 
     <script src="js/pivot-dashboard.js"></script>
+
+    <script src="js/artist-data.js"></script>
+
+    <script src="js/artist-dashboard.js"></script>
 
     <script src="js/manual-actions.js"></script>
 

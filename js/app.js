@@ -81,6 +81,8 @@ const Dashboard = {
 
         this.bindMarketingSubtabs();
 
+        this.bindPivotSubtabs();
+
         this.bindRecentCompletedFilter();
 
         ManualActionsForm.init();
@@ -243,6 +245,55 @@ const Dashboard = {
             filterGroup.title = disabled
                 ? "Não é possível filtrar as metas do ano — os quadros já somam o ano inteiro."
                 : "";
+
+        }
+
+    },
+
+    /* ======================================================
+       CONSUMO: SUB-ABAS "CONSUMO POR PLAYLIST" / "CONSUMO POR
+       ARTISTA" — mesmo mecanismo de bindMarketingSubtabs acima,
+       só que duplicado (não generalizado) pra não arriscar
+       regressão no fluxo de Marketing, que já está em produção.
+    ====================================================== */
+
+    pivotSubtab: "playlist",
+
+    bindPivotSubtabs() {
+
+        document.querySelectorAll(".pivot-subnav .marketing-subtab").forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                this.setPivotSubtab(button.dataset.pivotSubtab);
+
+            });
+
+        });
+
+        this.setPivotSubtab("playlist");
+
+    },
+
+    setPivotSubtab(subtab) {
+
+        this.pivotSubtab = subtab;
+
+        document.querySelectorAll(".pivot-subnav .marketing-subtab").forEach(button => {
+
+            button.classList.toggle("active", button.dataset.pivotSubtab === subtab);
+
+        });
+
+        document.querySelectorAll("#page-pivot .marketing-subpage").forEach(page => {
+
+            page.classList.toggle("active", page.id === `pivot-subpage-${subtab}`);
+
+        });
+
+        if (subtab === "artista" && typeof ArtistDashboard !== "undefined") {
+
+            ArtistDashboard.init();
 
         }
 

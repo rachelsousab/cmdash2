@@ -4818,6 +4818,122 @@ table.data-table{
 
 }
 
+/* ==========================================================
+   CONSUMO POR ARTISTA — só o que não é reaproveitado de
+   .pivot-* (upload item, KPIs em linha, tabela/gráfico,
+   comparativo já servem sem alteração)
+========================================================== */
+
+.artist-tipo-destaque-field{
+
+    margin-top:12px;
+
+}
+
+.artist-tipo-destaque-field > label{
+
+    font-size:.75rem;
+
+    font-weight:600;
+
+    color:var(--text-light);
+
+    text-transform:uppercase;
+
+    letter-spacing:.3px;
+
+    display:block;
+
+    margin-bottom:6px;
+
+}
+
+.artist-tipo-destaque-options{
+
+    display:flex;
+
+    gap:14px;
+
+    flex-wrap:wrap;
+
+}
+
+.artist-tipo-destaque-option{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    font-size:.8rem;
+
+    cursor:pointer;
+
+}
+
+.artist-album-filter-row{
+
+    padding:0 14px 14px;
+
+    border-top:1px solid var(--border);
+
+    padding-top:12px;
+
+    margin-top:4px;
+
+}
+
+.artist-album-filter-row label{
+
+    font-size:.75rem;
+
+    font-weight:600;
+
+    color:var(--text-light);
+
+    text-transform:uppercase;
+
+    letter-spacing:.3px;
+
+    display:block;
+
+    margin-bottom:6px;
+
+}
+
+.artist-album-filter{
+
+    width:100%;
+
+    max-width:400px;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    padding:6px;
+
+    font-size:.78rem;
+
+    font-family:inherit;
+
+    display:block;
+
+    margin-bottom:6px;
+
+}
+
+.artist-history-tipo-destaque{
+
+    font-size:.8rem;
+
+    color:var(--text-light);
+
+    margin:0 0 10px;
+
+}
+
 .pivot-kpi-grid{
 
     grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));

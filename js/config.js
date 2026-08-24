@@ -68,7 +68,7 @@ const CONFIG = {
     // implantar o Apps Script — ver scratch-code-gs-artista.gs).
     ARTIST_DATA: {
 
-    csvUrl: "",
+    csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQQJ4jSmLBWBh-x99s_m22LeDbAHbk7lPP_IJ_bkPikVgh-5TVC_RFfcjy1YirmQogz9HDWRwAjOr7v/pub?gid=0&single=true&output=csv",
 
     driveFolderUrl: "https://drive.google.com/drive/folders/1vZebJxkQ9RQtDW0lJ8R8rgiLG83HJeI8?usp=drive_link"
 
@@ -76,7 +76,7 @@ const CONFIG = {
 
     ARTIST_UPLOAD: {
 
-    webAppUrl: "",
+    webAppUrl: "https://script.google.com/a/macros/imusica.com.br/s/AKfycbwtqm2MCr1RAVRHefzHMOBcJJqqH9LqSEMN-8pCGwQbMJeQ5BXa7bCiuuDU4hq4bK_dZw/exec",
 
     sharedSecret: "DashCM2026ArtistaRachel"
 

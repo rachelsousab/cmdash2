@@ -298,7 +298,12 @@ const ArtistData = {
             driveFileId: this.toString(row["Drive File ID"]),
             driveUrl: this.toString(row["Drive File URL"]),
 
-            criadoEm: this.toString(row["Criado em"])
+            criadoEm: this.toString(row["Criado em"]),
+
+            // Reservado pra quando a relação Tipo de Destaque <->
+            // ações (Marketing e/ou Destaques de Gravadoras) for
+            // definida — por enquanto sempre vazio.
+            acoesRelacionadas: this.toString(row["Ações Relacionadas (IDs)"])
 
         };
 

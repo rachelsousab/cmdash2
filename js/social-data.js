@@ -372,6 +372,9 @@ normalize() {
             resumo:
                 this.toString(row["Resumo da ação"]),
 
+            legenda:
+                this.toString(row["Legenda"]),
+
             responsavel:
                 this.toString(row["Responsável"]),
 

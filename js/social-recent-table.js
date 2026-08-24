@@ -47,6 +47,7 @@ const SocialRecentTable = {
 
         const headerHtml =
             "<th>Data</th>" +
+            "<th>Legenda</th>" +
             "<th>Resumo da ação</th>" +
             "<th>Formato</th>" +
             "<th>Tipo</th>" +
@@ -67,6 +68,7 @@ const SocialRecentTable = {
         const bodyHtml = this._posts.map((post, index) => `
             <tr>
                 <td>${post.data ? post.data.toLocaleDateString(CONFIG.DATE.locale) : "—"}</td>
+                <td>${this.renderLegendaCell(post)}</td>
                 <td>${this.renderResumoCell(post, index)}</td>
                 <td>${this.renderDropdownCell(post, index, "formato", CONFIG.SOCIAL_FORM.formatos, false)}</td>
                 <td>${this.renderDropdownCell(post, index, "tipo", CONFIG.SOCIAL_FORM.tipos, false)}</td>
@@ -197,6 +199,21 @@ const SocialRecentTable = {
         okEl.style.display = "none";
         el.style.display = "";
         el.textContent = `${count} ${count === 1 ? "ação" : "ações"} com informações faltantes. O Instagram não consegue importar todas automaticamente. Favor adicionar de forma manual.`;
+
+    },
+
+    /* ======================================================
+       LEGENDA — texto que veio junto com o post na importação
+       do Instagram (só leitura, não editável por aqui). Ajuda a
+       saber do que se trata a ação na hora de escrever o Resumo,
+       ao lado. Sem legenda (post sem texto) mostra "—", sem
+       indicativo de "faltando" — não é um campo obrigatório.
+    ====================================================== */
+    renderLegendaCell(post) {
+
+        if (!post.legenda) return "—";
+
+        return `<span class="social-legenda-text" title="${this.escapeAttr(post.legenda)}">${this.escapeHtml(post.legenda)}</span>`;
 
     },
 

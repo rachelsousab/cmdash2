@@ -1642,9 +1642,42 @@ body.modal-open{
 
 }
 
+/* Legenda — texto do post (só leitura), truncado em 3 linhas
+   com "..." — passa o mouse (title) pra ler tudo. Fica junto da
+   Data pra dar contexto na hora de preencher o Resumo, ao lado. */
+.social-recent-table td:nth-child(2){
+
+    white-space:normal;
+
+    overflow-wrap:break-word;
+
+    min-width:200px;
+
+    max-width:200px;
+
+}
+
+.social-legenda-text{
+
+    display:-webkit-box;
+
+    -webkit-line-clamp:3;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+
+    color:var(--text-light);
+
+    font-size:.72rem;
+
+    line-height:1.35;
+
+}
+
 /* Resumo da ação — largura maior pra caber os nomes por
    inteiro, com quebra de linha em vez de esticar a tabela. */
-.social-recent-table td:nth-child(2){
+.social-recent-table td:nth-child(3){
 
     white-space:normal;
 
@@ -1659,8 +1692,8 @@ body.modal-open{
 /* Gravadora e Responsável — mais de um valor quebra em linhas
    (ver renderMultiSelectCell) em vez de virar uma lista longa
    separada por vírgula, então a coluna pode ficar mais estreita. */
-.social-recent-table td:nth-child(5),
-.social-recent-table td:nth-child(6){
+.social-recent-table td:nth-child(6),
+.social-recent-table td:nth-child(7){
 
     white-space:normal;
 

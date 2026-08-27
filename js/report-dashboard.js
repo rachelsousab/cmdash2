@@ -233,6 +233,12 @@ const ReportDashboard = {
 
         });
 
+        document.getElementById("reportSendBtn").addEventListener("click", () => {
+
+            ReportSend.open();
+
+        });
+
         document.getElementById("reportCoverPromptBtn").addEventListener("click", () => {
 
             this.copyCoverPrompt();
@@ -631,6 +637,30 @@ const ReportDashboard = {
         html += "</tbody></table>";
 
         return html;
+
+    },
+
+    /**
+     * Mesmos dados de buildTableHtml, só que como matriz simples
+     * (cabeçalho + linhas de texto puro) em vez de HTML — usado
+     * pra mandar a tabela pro Apps Script que cria a planilha
+     * temporária (ver js/report-send.js, updateSheet()).
+     */
+    buildTableData(rows, langDef) {
+
+        const headers = [langDef.headers[0], langDef.headers[1], langDef.headers[2], langDef.headers[3], langDef.headers[4], langDef.headers[5], langDef.headers[6]];
+
+        const data = rows.map(row => [
+            this.formatCountry(row.pais),
+            langDef.destaqueMap[row.destaque] || row.destaque,
+            row.playlist,
+            row.link,
+            row.artist,
+            row.contenido,
+            row.disquera
+        ]);
+
+        return { headers, data };
 
     },
 

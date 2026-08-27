@@ -1220,6 +1220,15 @@ body.modal-open{
 
 }
 
+/* Pode ser aberto por cima do modal "Enviar reporte" (que vem
+   depois dele no HTML, então ganharia da pilha por padrão) —
+   força ficar sempre por cima de qualquer outro modal. */
+#reportCoverDownloadModal.open{
+
+    z-index:2100;
+
+}
+
 .drilldown-box{
 
     background:white;
@@ -4567,6 +4576,320 @@ table.data-table{
     white-space:nowrap;
 
     flex-shrink:0;
+
+}
+
+.report-toolbar-actions{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    flex-shrink:0;
+
+}
+
+.report-send-field{
+
+    margin-bottom:0;
+
+}
+
+.report-send-field-warning{
+
+    text-transform:none;
+
+    font-weight:400;
+
+    color:var(--primary);
+
+    letter-spacing:normal;
+
+    margin-left:6px;
+
+    font-size:.68rem;
+
+}
+
+.report-send-field input[type="text"]{
+
+    width:100%;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    padding:8px 10px;
+
+    font-size:.82rem;
+
+    font-family:inherit;
+
+}
+
+.report-send-editor-toolbar{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    margin-bottom:6px;
+
+    flex-wrap:wrap;
+
+}
+
+#reportSendBoldBtn,
+#reportSendLinkBtn{
+
+    border:1px solid var(--border);
+
+    background:#fff;
+
+    border-radius:6px;
+
+    width:30px;
+
+    height:28px;
+
+    cursor:pointer;
+
+    font-size:.82rem;
+
+    flex-shrink:0;
+
+}
+
+#reportSendBoldBtn:hover,
+#reportSendLinkBtn:hover{
+
+    background:#F6F7FB;
+
+}
+
+.report-send-editor{
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    padding:10px 12px;
+
+    min-height:140px;
+
+    font-size:.85rem;
+
+    line-height:1.5;
+
+}
+
+.report-send-editor:focus{
+
+    outline:2px solid var(--primary);
+
+    outline-offset:-1px;
+
+}
+
+.report-send-editor a{
+
+    color:var(--primary);
+
+}
+
+.report-send-editor a.report-send-placeholder-link{
+
+    color:var(--text-light);
+
+    border-bottom:1px dashed var(--text-light);
+
+    text-decoration:none;
+
+}
+
+.report-send-lang-toggle{
+
+    display:flex;
+
+    gap:6px;
+
+    padding:0 24px 14px;
+
+}
+
+.report-send-lang-btn{
+
+    border:1px solid var(--border);
+
+    background:#fff;
+
+    border-radius:14px;
+
+    padding:3px 12px;
+
+    font-size:.7rem;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+}
+
+.report-send-lang-btn:hover{
+
+    background:#F6F7FB;
+
+}
+
+.report-send-lang-btn.active{
+
+    background:var(--primary);
+
+    border-color:var(--primary);
+
+    color:#fff;
+
+}
+
+.report-send-toolbar-sep{
+
+    width:1px;
+
+    background:var(--border);
+
+    margin:2px 4px;
+
+}
+
+.report-send-toolbar-text-btn{
+
+    border:1px solid var(--border);
+
+    background:#fff;
+
+    border-radius:6px;
+
+    padding:0 8px;
+
+    height:28px;
+
+    cursor:pointer;
+
+    font-size:.7rem;
+
+    font-family:inherit;
+
+    white-space:nowrap;
+
+}
+
+.report-send-toolbar-text-btn:hover{
+
+    background:#F6F7FB;
+
+}
+
+.report-send-toolbar-remove-btn{
+
+    color:var(--primary);
+
+    border-color:#F5C6CB;
+
+}
+
+.report-send-toolbar-remove-btn:hover{
+
+    background:#FDECEA;
+
+}
+
+.report-send-table-notice{
+
+    margin-top:6px;
+
+    color:var(--primary);
+
+    width:100%;
+
+    max-width:none;
+
+}
+
+.report-send-inline-link{
+
+    font-size:.72rem;
+
+    color:var(--text-light);
+
+    text-decoration:underline;
+
+    margin-left:6px;
+
+    white-space:nowrap;
+
+}
+
+.report-send-attach-hint{
+
+    font-size:.72rem;
+
+    color:var(--text-light);
+
+    line-height:1.4;
+
+    width:100%;
+
+    max-width:none;
+
+    margin:4px 0 0;
+
+}
+
+.report-send-footer{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:flex-end;
+
+    gap:6px;
+
+}
+
+.report-send-mode-toggle{
+
+    display:flex;
+
+    gap:16px;
+
+    align-self:flex-end;
+
+}
+
+.report-send-mode-option{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    font-size:.72rem;
+
+    color:var(--text-light);
+
+    cursor:pointer;
+
+}
+
+.report-send-mode-option input:disabled{
+
+    cursor:not-allowed;
 
 }
 

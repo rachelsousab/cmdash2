@@ -41,6 +41,30 @@ const CONFIG = {
 
 },
 
+    // Destinatários/link de planilha do botão "Enviar reporte", por
+    // Território + Gravadora (colunas: Território, Gravadora,
+    // Destinatários, Link da Planilha — ver js/report-recipients-data.js).
+    // Vazio até a Rachel publicar essa planilha.
+    REPORT_RECIPIENTS: {
+
+    csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTxorxB3kXZyYfx6xFvDypZOoIOVHnDSZEO3OzZhkXkYU111uP9gE0BsE4yyEdqciJ6uFTpmVht7yKT/pub?gid=0&single=true&output=csv"
+
+},
+
+    // Botão "Atualizar planilha de destaque" (dentro de "Enviar
+    // reporte") — cria uma planilha temporária com a tabela de
+    // destaques, só pra servir de origem pro "Copiar para >
+    // Planilha existente" nativo do Google Sheets. Um único script
+    // pra todas as gravadoras (ver scratch-code-gs-report-send.gs).
+    // Vazio até a Rachel implantar o script.
+    REPORT_SEND: {
+
+    webAppUrl: "",
+
+    sharedSecret: "DashCM2026ReportSendRachel"
+
+},
+
     // "Consumo de Playlists" (tabela dinâmica automática) — histórico
     // vem do CSV publicado da planilha de rastreamento; upload vai
     // pro Web App que gera a Sheet com pivot table + gráfico.

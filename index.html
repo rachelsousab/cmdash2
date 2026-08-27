@@ -1064,6 +1064,82 @@
 
 </div>
 
+<!-- ========================================================= -->
+<!-- MODAL: Gerador de Reporte — Enviar reporte -->
+<!-- ========================================================= -->
+
+<div id="reportSendModal" class="drilldown-modal">
+
+    <div class="drilldown-box maf-form-box" style="max-width:760px;">
+
+        <div class="drilldown-header">
+            <div class="maf-form-header-left">
+                <h3>Enviar reporte</h3>
+                <span id="reportSendSubtitle" class="maf-form-subtitle"></span>
+            </div>
+            <button id="reportSendClose" class="drilldown-close" aria-label="Fechar">✕</button>
+        </div>
+
+        <div class="report-send-lang-toggle" id="reportSendLangToggle">
+            <button type="button" class="report-send-lang-btn" data-lang="pt">Português</button>
+            <button type="button" class="report-send-lang-btn" data-lang="es">Espanhol</button>
+            <button type="button" class="report-send-lang-btn" data-lang="en">Inglês</button>
+        </div>
+
+        <div class="maf-form-body">
+
+            <div class="filter report-send-field">
+                <label>Destinatários <span class="report-send-field-warning">Por favor, sempre confira os endereços de e-mail antes de enviar.</span></label>
+                <input type="text" id="reportSendTo" placeholder="Preencha manualmente, ainda não configurado">
+            </div>
+
+            <div class="filter report-send-field">
+                <label>Assunto</label>
+                <input type="text" id="reportSendSubject">
+            </div>
+
+            <div class="filter report-send-field">
+                <label>Corpo do e-mail</label>
+                <div class="report-send-editor-toolbar">
+                    <button type="button" id="reportSendBoldBtn" title="Negrito"><strong>N</strong></button>
+                    <button type="button" id="reportSendLinkBtn" title="Inserir link">🔗</button>
+                    <span class="report-send-toolbar-sep"></span>
+                    <button type="button" id="reportSendPasteTableBtn" class="report-send-toolbar-text-btn">Colar tabela de destaques</button>
+                    <button type="button" id="reportSendUpdateSheetBtn" class="report-send-toolbar-text-btn">Atualizar planilha de destaque</button>
+                    <button type="button" id="reportSendRemoveTableBtn" class="report-send-toolbar-text-btn report-send-toolbar-remove-btn" style="display:none;">Remover tabela</button>
+                </div>
+                <div id="reportSendBody" class="report-send-editor" contenteditable="true"></div>
+                <p class="report-hint report-send-table-notice" id="reportSendTableNotice" style="display:none;">Com a tabela colada no corpo, "Enviar direto, sem formatação" fica indisponível, a tabela precisa ir formatada.</p>
+            </div>
+
+            <p class="report-send-attach-hint">
+                Faça download das capas da semana e anexe no Gmail no próximo passo.
+                <a href="#" id="reportSendDownloadCoversLink" class="report-send-inline-link">Baixar capas da semana</a>
+            </p>
+
+        </div>
+
+        <div class="maf-form-footer report-send-footer">
+
+            <button type="button" id="reportSendGmailBtn" class="data-table-link-btn">✉️ Enviar e-mail</button>
+
+            <div class="report-send-mode-toggle" id="reportSendModeToggle">
+                <label class="report-send-mode-option">
+                    <input type="radio" name="reportSendMode" value="direto" checked>
+                    Enviar direto, sem formatação
+                </label>
+                <label class="report-send-mode-option">
+                    <input type="radio" name="reportSendMode" value="copiar">
+                    Copiar formatação e abrir Gmail para colar
+                </label>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 <!--NOVA PÁGINA - REPORT GRAVADORAS (NATIVO)-->
 <div id="page-labels" class="page">
 
@@ -1689,13 +1765,19 @@
 
         </div>
 
-        <a
-            class="data-table-link-btn report-folder-btn"
-            href="https://drive.google.com/drive/folders/1MihTbxkT_HpDcFFtYslwc26DDJnKZnIq?usp=drive_link"
-            target="_blank"
-            rel="noopener">
-            Pasta de capas
-        </a>
+        <div class="report-toolbar-actions">
+
+            <a
+                class="data-table-link-btn report-folder-btn"
+                href="https://drive.google.com/drive/folders/1MihTbxkT_HpDcFFtYslwc26DDJnKZnIq?usp=drive_link"
+                target="_blank"
+                rel="noopener">
+                Pasta de capas
+            </a>
+
+            <button type="button" id="reportSendBtn" class="data-table-link-btn">📧 Enviar reporte</button>
+
+        </div>
 
     </div>
 
@@ -2567,6 +2649,10 @@
     <script src="js/report-dashboard.js"></script>
 
     <script src="js/report-cover-download.js"></script>
+
+    <script src="js/report-recipients-data.js"></script>
+
+    <script src="js/report-send.js"></script>
 
     <script src="js/pivot-data.js"></script>
 

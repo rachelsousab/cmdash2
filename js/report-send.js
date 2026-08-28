@@ -568,27 +568,6 @@ const ReportSend = {
     },
 
     /**
-     * O placeholder (âncora tracejada) continua com a classe
-     * "report-send-placeholder-link" mesmo depois de resolvido por
-     * "Atualizar planilha de destaque" (só o href muda) — por isso
-     * essa checagem é separada de findPlaceholder(): só considera
-     * "ainda não resolvido" quando o href continua "#" (nunca virou
-     * o link de verdade). Usada em sendEmail() pra travar o envio
-     * nesse caso.
-     */
-    hasUnresolvedPlaceholder() {
-
-        const placeholder = this.findPlaceholder();
-
-        if (!placeholder) return false;
-
-        const href = placeholder.getAttribute("href") || "";
-
-        return href === "#" || href === "";
-
-    },
-
-    /**
      * Guarda a posição atual do cursor/seleção dentro do corpo do
      * e-mail, só quando ela está mesmo dentro dele (clique fora não
      * sobrescreve a última posição válida).
@@ -904,6 +883,41 @@ const ReportSend = {
     },
 
     /**
+     * Cópia do corpo, fora da tela mas anexada ao documento (precisa
+     * estar no DOM de verdade pra dar pra selecionar/copiar), com
+     * qualquer placeholder AINDA não resolvido (href="#", "Atualizar
+     * planilha de destaque" não clicado) trocado por texto puro, sem
+     * link nenhum. Sem essa troca, copiar formatado faria o
+     * navegador resolver o "#" pra URL da própria página do
+     * dashboard, mandando um link errado no e-mail. Quem chama
+     * precisa remover esse clone do documento depois de usar
+     * (`bodyEl.remove()`).
+     */
+    buildSafeBodyClone(bodyEl) {
+
+        const clone = bodyEl.cloneNode(true);
+
+        clone.querySelectorAll(".report-send-placeholder-link").forEach(anchor => {
+
+            const href = anchor.getAttribute("href") || "";
+
+            if (href === "#" || href === "") {
+                anchor.replaceWith(document.createTextNode(anchor.textContent));
+            }
+
+        });
+
+        clone.style.position = "fixed";
+        clone.style.left = "-9999px";
+        clone.style.top = "0";
+
+        document.body.appendChild(clone);
+
+        return clone;
+
+    },
+
+    /**
      * "text (URL)" pra links de verdade (href diferente de "#" —
      * ainda não resolvido), só o texto quando o placeholder nunca
      * foi preenchido. Preserva parágrafos como linha em branco.
@@ -955,21 +969,6 @@ const ReportSend = {
 
     sendEmail() {
 
-        // Trava de segurança: um placeholder ainda não resolvido
-        // (href="#", "Atualizar planilha de destaque" nunca clicado
-        // ou o corpo foi regerado depois — troca de idioma limpa a
-        // resolução anterior) vira, ao COPIAR formatado, a própria
-        // URL do dashboard (o navegador resolve "#" pro endereço da
-        // página na hora de serializar o HTML copiado) — um link
-        // errado indo pro e-mail, sem nenhum aviso. Bloqueia o envio
-        // até resolver.
-        if (this.hasUnresolvedPlaceholder()) {
-
-            alert("O link da planilha de destaques ainda não foi gerado. Clique em \"Atualizar planilha de destaque\" antes de enviar, para não sair um link errado no e-mail.");
-            return;
-
-        }
-
         // No modo "corpo" (tabela colada no texto), o envio é
         // sempre com formatação copiada — não tem os radios pra
         // escolher (ver renderForMode()).
@@ -979,7 +978,32 @@ const ReportSend = {
 
         const to = document.getElementById("reportSendTo").value.trim();
         const subject = document.getElementById("reportSendSubject").value.trim();
-        const bodyEl = document.getElementById("reportSendBody");
+
+        // Nunca bloqueia o envio, mas também nunca deixa um
+        // placeholder ainda não resolvido (href="#", "Atualizar
+        // planilha de destaque" não clicado) virar link — ao copiar
+        // formatado, o navegador resolveria esse "#" pra própria URL
+        // do dashboard. Um clone "seguro" troca esse link por texto
+        // puro (sem href nenhum) só na hora de enviar, sem alterar o
+        // que está sendo editado na tela. Fica fora da tela, anexado
+        // temporariamente (precisa estar no documento pra selecionar
+        // e copiar), removido no fim desta função.
+        const bodyEl = this.buildSafeBodyClone(document.getElementById("reportSendBody"));
+
+        try {
+
+            this.sendEmailWithBody(bodyEl, mode, to, subject);
+
+        }
+        finally {
+
+            bodyEl.remove();
+
+        }
+
+    },
+
+    sendEmailWithBody(bodyEl, mode, to, subject) {
 
         if (mode === "copiar") {
 

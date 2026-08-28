@@ -4711,6 +4711,10 @@ table.data-table{
 
     line-height:1.5;
 
+    max-width:100%;
+
+    overflow-x:auto;
+
 }
 
 .report-send-editor p{

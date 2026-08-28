@@ -568,6 +568,27 @@ const ReportSend = {
     },
 
     /**
+     * O placeholder (âncora tracejada) continua com a classe
+     * "report-send-placeholder-link" mesmo depois de resolvido por
+     * "Atualizar planilha de destaque" (só o href muda) — por isso
+     * essa checagem é separada de findPlaceholder(): só considera
+     * "ainda não resolvido" quando o href continua "#" (nunca virou
+     * o link de verdade). Usada em sendEmail() pra travar o envio
+     * nesse caso.
+     */
+    hasUnresolvedPlaceholder() {
+
+        const placeholder = this.findPlaceholder();
+
+        if (!placeholder) return false;
+
+        const href = placeholder.getAttribute("href") || "";
+
+        return href === "#" || href === "";
+
+    },
+
+    /**
      * Guarda a posição atual do cursor/seleção dentro do corpo do
      * e-mail, só quando ela está mesmo dentro dele (clique fora não
      * sobrescreve a última posição válida).
@@ -933,6 +954,21 @@ const ReportSend = {
     },
 
     sendEmail() {
+
+        // Trava de segurança: um placeholder ainda não resolvido
+        // (href="#", "Atualizar planilha de destaque" nunca clicado
+        // ou o corpo foi regerado depois — troca de idioma limpa a
+        // resolução anterior) vira, ao COPIAR formatado, a própria
+        // URL do dashboard (o navegador resolve "#" pro endereço da
+        // página na hora de serializar o HTML copiado) — um link
+        // errado indo pro e-mail, sem nenhum aviso. Bloqueia o envio
+        // até resolver.
+        if (this.hasUnresolvedPlaceholder()) {
+
+            alert("O link da planilha de destaques ainda não foi gerado. Clique em \"Atualizar planilha de destaque\" antes de enviar, para não sair um link errado no e-mail.");
+            return;
+
+        }
 
         // No modo "corpo" (tabela colada no texto), o envio é
         // sempre com formatação copiada — não tem os radios pra

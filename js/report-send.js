@@ -720,12 +720,6 @@ const ReportSend = {
 
         }
 
-        const placeholder = this.findPlaceholder();
-
-        if (placeholder) {
-            placeholder.setAttribute("href", this._currentLookup.linkPlanilha);
-        }
-
         const btn = document.getElementById("reportSendUpdateSheetBtn");
         const original = btn.textContent;
 
@@ -761,6 +755,19 @@ const ReportSend = {
             if (!result.success) {
                 throw new Error((result.errors && result.errors[0]) || "Erro ao atualizar a planilha.");
             }
+
+            // O placeholder só vira link de verdade (e o botão
+            // "Enviar e-mail" só libera, ver updateModeAvailability)
+            // DEPOIS de confirmar que a planilha foi mesmo
+            // atualizada — setar antes, otimisticamente, deixaria o
+            // link/botão liberados mesmo se essa chamada falhasse.
+            const placeholder = this.findPlaceholder();
+
+            if (placeholder) {
+                placeholder.setAttribute("href", this._currentLookup.linkPlanilha);
+            }
+
+            this.updateModeAvailability();
 
             btn.textContent = "✔ Planilha atualizada, abrindo...";
 
@@ -825,6 +832,14 @@ const ReportSend = {
      * texto puro sai ilegível) — desmarca e desabilita essa opção
      * automaticamente, com um aviso. No modo "corpo" esses radios
      * nem aparecem (ver renderForMode()), então isso não se aplica.
+     *
+     * Também trava o botão "Enviar e-mail" enquanto o link da
+     * planilha ([[texto]]) ainda não foi resolvido por "Atualizar
+     * planilha de destaque" — com uma dica ao passar o mouse
+     * explicando o motivo. Sem nenhum [[texto]] no corpo (texto
+     * padrão sem marcador, ou modo "corpo" onde ele nem chega a
+     * virar link), não há nada esperando resolução, então o botão
+     * fica liberado normalmente.
      */
     updateModeAvailability() {
 
@@ -848,6 +863,17 @@ const ReportSend = {
             copiarInput.checked = true;
 
         }
+
+        const sendBtn = document.getElementById("reportSendGmailBtn");
+        const placeholder = this.findPlaceholder();
+        const placeholderHref = placeholder ? (placeholder.getAttribute("href") || "") : "";
+        const linkPendente = !!placeholder && (placeholderHref === "#" || placeholderHref === "");
+
+        sendBtn.disabled = linkPendente;
+
+        sendBtn.title = linkPendente
+            ? "Clique em \"Atualizar planilha de destaque\" antes de enviar."
+            : "";
 
     },
 
@@ -979,15 +1005,15 @@ const ReportSend = {
         const to = document.getElementById("reportSendTo").value.trim();
         const subject = document.getElementById("reportSendSubject").value.trim();
 
-        // Nunca bloqueia o envio, mas também nunca deixa um
-        // placeholder ainda não resolvido (href="#", "Atualizar
-        // planilha de destaque" não clicado) virar link — ao copiar
-        // formatado, o navegador resolveria esse "#" pra própria URL
-        // do dashboard. Um clone "seguro" troca esse link por texto
-        // puro (sem href nenhum) só na hora de enviar, sem alterar o
-        // que está sendo editado na tela. Fica fora da tela, anexado
-        // temporariamente (precisa estar no documento pra selecionar
-        // e copiar), removido no fim desta função.
+        // Chega até aqui só quando o botão "Enviar e-mail" está
+        // liberado (ver updateModeAvailability) — ele mesmo fica
+        // desabilitado, com dica ao passar o mouse, enquanto o link
+        // da planilha não foi resolvido. O clone abaixo continua
+        // como segunda camada de segurança, pra nunca vazar um link
+        // "#" (ele viraria a URL do próprio dashboard ao copiar
+        // formatado) mesmo num caso não previsto.  Fica fora da
+        // tela, anexado temporariamente (precisa estar no documento
+        // pra selecionar e copiar), removido no fim desta função.
         const bodyEl = this.buildSafeBodyClone(document.getElementById("reportSendBody"));
 
         try {

@@ -4230,6 +4230,26 @@ body.auth-locked{
 
 }
 
+.data-table-link-btn:disabled{
+
+    background:var(--text-light);
+
+    border-color:var(--text-light);
+
+    cursor:not-allowed;
+
+    opacity:.6;
+
+}
+
+.data-table-link-btn:disabled:hover{
+
+    background:var(--text-light);
+
+    border-color:var(--text-light);
+
+}
+
 .data-table-scroll{
 
     overflow:auto;

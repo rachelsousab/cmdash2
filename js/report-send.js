@@ -909,43 +909,46 @@ const ReportSend = {
     },
 
     /**
-     * Cópia do corpo, fora da tela mas anexada ao documento (precisa
-     * estar no DOM de verdade pra dar pra selecionar/copiar), com
-     * qualquer placeholder AINDA não resolvido (href="#", "Atualizar
-     * planilha de destaque" não clicado) trocado por texto puro, sem
-     * link nenhum. Sem essa troca, copiar formatado faria o
-     * navegador resolver o "#" pra URL da própria página do
-     * dashboard, mandando um link errado no e-mail. Quem chama
-     * precisa remover esse clone do documento depois de usar
-     * (`bodyEl.remove()`).
+     * Troca, DIRETO na caixa visível (não numa cópia fora da tela —
+     * isso já causou um bug visual de fundo azul ao copiar, um
+     * elemento posicionado fora da tela aparentemente pinta esquisito
+     * o destaque de seleção nele), qualquer placeholder AINDA não
+     * resolvido (href="#", "Atualizar planilha de destaque" não
+     * clicado) por texto puro, sem link nenhum. Sem essa troca,
+     * copiar formatado faria o navegador resolver o "#" pra URL da
+     * própria página do dashboard, mandando um link errado no
+     * e-mail. Devolve uma lista pra desfazer a troca logo depois
+     * (ver restoreUnresolvedPlaceholders) — a pessoa nem chega a
+     * perceber, a troca e o desfazer acontecem no mesmo instante,
+     * antes da tela redesenhar.
      */
-    buildSafeBodyClone(bodyEl) {
+    stripUnresolvedPlaceholders(bodyEl) {
 
-        const clone = bodyEl.cloneNode(true);
+        const replacements = [];
 
-        clone.querySelectorAll(".report-send-placeholder-link").forEach(anchor => {
+        bodyEl.querySelectorAll(".report-send-placeholder-link").forEach(anchor => {
 
             const href = anchor.getAttribute("href") || "";
 
             if (href === "#" || href === "") {
-                anchor.replaceWith(document.createTextNode(anchor.textContent));
+
+                const textNode = document.createTextNode(anchor.textContent);
+
+                anchor.replaceWith(textNode);
+
+                replacements.push({ anchor, textNode });
+
             }
 
         });
 
-        clone.style.position = "fixed";
-        clone.style.left = "-9999px";
-        clone.style.top = "0";
+        return replacements;
 
-        // Sem isso, alguns navegadores gravam a cor de destaque da
-        // seleção (o azul de "texto selecionado") como fundo inline
-        // de verdade no HTML copiado, e esse fundo aparece colado no
-        // Gmail depois — feio e sem relação com a formatação real.
-        clone.classList.add("report-send-copy-clone");
+    },
 
-        document.body.appendChild(clone);
+    restoreUnresolvedPlaceholders(replacements) {
 
-        return clone;
+        replacements.forEach(({ anchor, textNode }) => { textNode.replaceWith(anchor); });
 
     },
 
@@ -1014,13 +1017,14 @@ const ReportSend = {
         // Chega até aqui só quando o botão "Enviar e-mail" está
         // liberado (ver updateModeAvailability) — ele mesmo fica
         // desabilitado, com dica ao passar o mouse, enquanto o link
-        // da planilha não foi resolvido. O clone abaixo continua
+        // da planilha não foi resolvido. A troca abaixo continua
         // como segunda camada de segurança, pra nunca vazar um link
         // "#" (ele viraria a URL do próprio dashboard ao copiar
-        // formatado) mesmo num caso não previsto.  Fica fora da
-        // tela, anexado temporariamente (precisa estar no documento
-        // pra selecionar e copiar), removido no fim desta função.
-        const bodyEl = this.buildSafeBodyClone(document.getElementById("reportSendBody"));
+        // formatado) mesmo num caso não previsto — troca e desfaz na
+        // hora, direto na caixa visível (nada de clone fora da tela).
+        const bodyEl = document.getElementById("reportSendBody");
+
+        const replacements = this.stripUnresolvedPlaceholders(bodyEl);
 
         try {
 
@@ -1029,7 +1033,7 @@ const ReportSend = {
         }
         finally {
 
-            bodyEl.remove();
+            this.restoreUnresolvedPlaceholders(replacements);
 
         }
 

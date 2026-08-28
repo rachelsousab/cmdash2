@@ -235,13 +235,7 @@ const ReportDashboard = {
 
         document.getElementById("reportSendBtn").addEventListener("click", () => {
 
-            ReportSend.open();
-
-        });
-
-        document.getElementById("reportCoverPromptBtn").addEventListener("click", () => {
-
-            this.copyCoverPrompt();
+            ReportSend.openChooser();
 
         });
 
@@ -643,24 +637,60 @@ const ReportDashboard = {
     /**
      * Mesmos dados de buildTableHtml, só que como matriz simples
      * (cabeçalho + linhas de texto puro) em vez de HTML — usado
-     * pra mandar a tabela pro Apps Script que cria a planilha
-     * temporária (ver js/report-send.js, updateSheet()).
+     * pra mandar a tabela pro Apps Script que insere a aba na
+     * planilha da gravadora (ver js/report-send.js, updateSheet()).
+     *
+     * Mesma regra da tabela original: sem coluna Gravadora (a
+     * gravadora já sabe que o lançamento é dela) e sem coluna País
+     * quando o território é Brasil (só LatAm/Todos mostram País,
+     * onde ele realmente varia) — mesmo `this.filters.includeCountry`
+     * que já liga/desliga sozinho por território em
+     * applyTerritoryDefaults(), e que a pessoa também pode ajustar
+     * manualmente no toggle da tela.
+     *
+     * "tipos" vai à parte (CAPA/INCLUSÃO/INSTAGRAM, sempre no
+     * código original) pro Apps Script conseguir colorir cada
+     * linha do jeito certo mesmo com a coluna Destaque já traduzida
+     * pro idioma escolhido (Portada/Cover etc. não dá pra usar
+     * pra decidir a cor).
      */
     buildTableData(rows, langDef) {
 
-        const headers = [langDef.headers[0], langDef.headers[1], langDef.headers[2], langDef.headers[3], langDef.headers[4], langDef.headers[5], langDef.headers[6]];
+        const includeCountry = this.filters.includeCountry;
 
-        const data = rows.map(row => [
-            this.formatCountry(row.pais),
-            langDef.destaqueMap[row.destaque] || row.destaque,
-            row.playlist,
-            row.link,
-            row.artist,
-            row.contenido,
-            row.disquera
-        ]);
+        const headers = [];
 
-        return { headers, data };
+        if (includeCountry) headers.push(langDef.headers[0]);
+
+        headers.push(langDef.headers[1], langDef.headers[2], langDef.headers[3], langDef.headers[4], langDef.headers[5]);
+
+        const data = rows.map(row => {
+
+            const line = [];
+
+            if (includeCountry) line.push(this.formatCountry(row.pais));
+
+            line.push(
+                langDef.destaqueMap[row.destaque] || row.destaque,
+                row.playlist,
+                row.link,
+                row.artist,
+                row.contenido
+            );
+
+            return line;
+
+        });
+
+        const tipos = rows.map(row => row.destaque);
+
+        // Posição (a partir de 0) da coluna Destaque em "headers"/
+        // cada linha de "data" — varia porque País só entra quando
+        // includeCountry está ligado. O Apps Script usa isso pra
+        // saber qual coluna colorir (ver scratch-code-gs-report-send.gs).
+        const destaqueColIndex = includeCountry ? 1 : 0;
+
+        return { headers, data, tipos, destaqueColIndex };
 
     },
 
@@ -794,120 +824,5 @@ const ReportDashboard = {
         URL.revokeObjectURL(a.href);
 
     },
-
-    /* ======================================================
-       COPIAR PROMPT DE CAPAS (texto puro, pra colar no Gemini
-       do Google Drive) — só os destaques CAPA/PORTADA/COVER da
-       tabela já filtrada (Semana/Território/Gravadora/Idioma).
-    ====================================================== */
-
-    COVER_PROMPT_INTRO: "Encontre, nessa pasta, as imagens referentes às capas das playlists listadas abaixo, por país.",
-
-    copyCoverPrompt() {
-
-        const lang = this.filters.idioma;
-
-        if (!lang) {
-
-            alert("Selecione um idioma antes de copiar.");
-
-            return;
-
-        }
-
-        const rows = this.getFilteredRows().filter(row => row.destaque === "CAPA");
-
-        if (!rows.length) {
-
-            alert("Nenhuma capa (Capa/Portada/Cover) encontrada para esse recorte.");
-
-            return;
-
-        }
-
-        const lines = rows.map(row => `${this.formatCountry(row.pais)} - ${row.playlist} - ${row.artist}`);
-
-        const text = `${this.COVER_PROMPT_INTRO}\n\n${lines.join("\n")}`;
-
-        this.copyPlainText(text, "reportCoverPromptBtn");
-
-    },
-
-    /**
-     * IMPORTANTE: tenta o método síncrono (execCommand) primeiro
-     * — mesma estratégia que já funciona no botão "Copiar
-     * tabela". A Clipboard API assíncrona (navigator.clipboard)
-     * às vezes rejeita silenciosamente dependendo da origem/
-     * navegador (ex.: GitHub Pages), e nesse caso, como o
-     * fallback só rodaria dentro do .catch() (fora do gesto de
-     * clique original), o execCommand também falha — por isso
-     * ele precisa ser o método principal, não o fallback.
-     */
-    copyPlainText(text, buttonId) {
-
-        const btn = document.getElementById(buttonId);
-
-        const finish = (ok) => {
-
-            if (!btn) return;
-
-            const original = btn.textContent;
-
-            btn.textContent = ok ? "✔ Copiado!" : "Não foi possível copiar";
-
-            setTimeout(() => { btn.textContent = original; }, 1800);
-
-        };
-
-        if (this.copyPlainTextFallback(text)) {
-
-            finish(true);
-
-        }
-        else if (navigator.clipboard && navigator.clipboard.writeText) {
-
-            navigator.clipboard.writeText(text)
-                .then(() => finish(true))
-                .catch(() => finish(false));
-
-        }
-        else {
-
-            finish(false);
-
-        }
-
-    },
-
-    copyPlainTextFallback(text) {
-
-        const textarea = document.createElement("textarea");
-
-        textarea.value = text;
-        textarea.style.position = "fixed";
-        textarea.style.left = "-9999px";
-
-        document.body.appendChild(textarea);
-
-        textarea.select();
-
-        let ok = false;
-
-        try {
-
-            ok = document.execCommand("copy");
-
-        }
-        catch (error) {
-
-            ok = false;
-
-        }
-
-        document.body.removeChild(textarea);
-
-        return ok;
-
-    }
 
 };

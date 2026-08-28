@@ -21,7 +21,18 @@
  * Uma gravadora que usa o mesmo contato em qualquer país pode
  * ter uma linha com Território = "Todos" — o lookup usa o valor
  * exato que está selecionado no filtro, sem tentar combinar
- * territórios diferentes.
+ * territórios diferentes. Quando o filtro do dashboard está em
+ * "Todos" (visão de vários territórios juntos) e a gravadora só
+ * tem linha num território específico, cai num segundo lookup
+ * só por Gravadora (ver lookup() abaixo).
+ *
+ * A planilha às vezes ganha uma linha de título/seção acima do
+ * cabeçalho de verdade (ex.: "ENVIO AUTOMÁTICO DASHBOARD"), o que
+ * faz o Papa.parse (que sempre lê a 1ª linha como cabeçalho) errar
+ * feio e nenhuma gravadora ser encontrada. Por isso o parse abaixo
+ * primeiro acha, no bruto (sem header), a linha real que contém
+ * "Território" numa das células, e só aí monta os objetos — assim
+ * continua funcionando mesmo com uma ou mais linhas extras acima.
  *
  * Vazio até a Rachel publicar essa planilha (CONFIG.REPORT_RECIPIENTS.csvUrl).
  * ==========================================================
@@ -48,28 +59,57 @@ const ReportRecipientsData = {
             Papa.parse(csvUrl, {
 
                 download: true,
-                header: true,
+                header: false,
                 skipEmptyLines: true,
-
-                // Casa o nome da coluna ignorando acento/maiúscula e
-                // espaço sobrando — um CSV publicado pelo Sheets às
-                // vezes carrega BOM/espaço invisível ou uma forma de
-                // acentuação diferente da que a gente digita aqui no
-                // código, mesmo os dois parecendo idênticos na tela.
-                // Isso já fez uma coluna inteira (Legenda) sumir
-                // silenciosamente em outra parte do dashboard antes.
-                transformHeader: (header) => this.normalizeKey(header),
 
                 complete: (results) => {
 
-                    this.rows = results.data.map(row => ({
-                        territorio: this.toString(this.getColumn(row, "Território")),
-                        gravadora: this.toString(this.getColumn(row, "Gravadora")),
-                        destinatarios: this.toString(this.getColumn(row, "Contatos")),
-                        corpoPadrao: this.toString(this.getColumn(row, "E-mail padrão")),
-                        tituloDestaque: this.toString(this.getColumn(row, "Título Destaque")),
-                        linkPlanilha: this.toString(this.getColumn(row, "Destaques (enviar) (link direto)"))
-                    }));
+                    const raw = results.data;
+
+                    const headerIndex = raw.findIndex(cells =>
+                        cells.some(cell => this.normalizeKey(cell) === this.normalizeKey("Território"))
+                    );
+
+                    if (headerIndex === -1) {
+
+                        console.error("[ReportRecipientsData] Não achei a linha de cabeçalho (coluna \"Território\") na planilha publicada.");
+
+                        this.rows = [];
+                        this.loaded = true;
+
+                        resolve(this.rows);
+
+                        return;
+
+                    }
+
+                    // Casa o nome da coluna ignorando acento/maiúscula e
+                    // espaço sobrando — um CSV publicado pelo Sheets às
+                    // vezes carrega BOM/espaço invisível ou uma forma de
+                    // acentuação diferente da que a gente digita aqui no
+                    // código, mesmo os dois parecendo idênticos na tela.
+                    // Isso já fez uma coluna inteira (Legenda) sumir
+                    // silenciosamente em outra parte do dashboard antes.
+                    const headerCells = raw[headerIndex].map(cell => this.normalizeKey(cell));
+
+                    const dataRows = raw.slice(headerIndex + 1);
+
+                    this.rows = dataRows.map(cells => {
+
+                        const row = {};
+
+                        headerCells.forEach((key, index) => { row[key] = cells[index]; });
+
+                        return {
+                            territorio: this.toString(this.getColumn(row, "Território")),
+                            gravadora: this.toString(this.getColumn(row, "Gravadora")),
+                            destinatarios: this.toString(this.getColumn(row, "Contatos")),
+                            corpoPadrao: this.toString(this.getColumn(row, "E-mail padrão")),
+                            tituloDestaque: this.toString(this.getColumn(row, "Título Destaque")),
+                            linkPlanilha: this.toString(this.getColumn(row, "Destaques (enviar) (link direto)"))
+                        };
+
+                    }).filter(row => row.gravadora);
 
                     this.loaded = true;
 
@@ -128,8 +168,14 @@ const ReportRecipientsData = {
      * Busca pela combinação exata Território+Gravadora (comparação
      * sem diferenciar maiúsculas/acentos, pra tolerar pequenas
      * diferenças de digitação entre a planilha e os filtros do
-     * dashboard). Retorna null se não achar ou se a planilha ainda
-     * não estiver configurada.
+     * dashboard). Se não achar e o território do filtro for "Todos"
+     * (visão de vários territórios juntos no dashboard, não um
+     * valor real que aparece na planilha de gravadoras), busca só
+     * pela Gravadora — mas só usa o resultado se houver exatamente
+     * UMA linha daquela gravadora na planilha (achando 2+, território
+     * diferentes de verdade, não arrisca escolher a errada). Retorna
+     * null se não achar de nenhum jeito, ou se a planilha ainda não
+     * estiver configurada.
      */
     lookup(territorio, gravadora) {
 
@@ -138,12 +184,39 @@ const ReportRecipientsData = {
             .replace(/[̀-ͯ]/g, "")
             .toLowerCase();
 
-        const match = this.rows.find(row =>
+        const exact = this.rows.find(row =>
             normalize(row.territorio) === normalize(territorio) &&
             normalize(row.gravadora) === normalize(gravadora)
         );
 
-        return match || null;
+        if (exact) return exact;
+
+        if (normalize(territorio) === normalize("Todos")) {
+
+            const porGravadora = this.rows.filter(row => normalize(row.gravadora) === normalize(gravadora));
+
+            if (porGravadora.length === 1) return porGravadora[0];
+
+        }
+
+        return null;
+
+    },
+
+    /**
+     * Quantas linhas essa Gravadora tem na planilha, não importa o
+     * território (usado pra avisar no pop-up quando o filtro está
+     * em "Todos" e a gravadora tem contato específico por
+     * território, ver ReportSend.open()).
+     */
+    countRowsForGravadora(gravadora) {
+
+        const normalize = (text) => this.toString(text)
+            .normalize("NFD")
+            .replace(/[̀-ͯ]/g, "")
+            .toLowerCase();
+
+        return this.rows.filter(row => normalize(row.gravadora) === normalize(gravadora)).length;
 
     }
 

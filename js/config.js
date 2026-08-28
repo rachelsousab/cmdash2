@@ -59,7 +59,7 @@ const CONFIG = {
     // Vazio até a Rachel implantar o script.
     REPORT_SEND: {
 
-    webAppUrl: "",
+    webAppUrl: "https://script.google.com/macros/s/AKfycbyBHvjxsU-EblRBJMgT_-vdcAfvnFtnZDI6fSiEDx3cuQE23YC1a56jpn6O5N7PNy24hQ/exec",
 
     sharedSecret: "DashCM2026ReportSendRachel"
 

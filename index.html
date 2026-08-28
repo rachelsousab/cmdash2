@@ -1068,6 +1068,38 @@
 <!-- MODAL: Gerador de Reporte — Enviar reporte -->
 <!-- ========================================================= -->
 
+<div id="reportSendChooserModal" class="drilldown-modal">
+
+    <div class="drilldown-box maf-form-box" style="max-width:520px;">
+
+        <div class="drilldown-header">
+            <div class="maf-form-header-left">
+                <h3>Enviar reporte</h3>
+                <span id="reportSendChooserSubtitle" class="maf-form-subtitle"></span>
+            </div>
+            <button id="reportSendChooserClose" class="drilldown-close" aria-label="Fechar">✕</button>
+        </div>
+
+        <div class="maf-form-body">
+
+            <p class="report-send-chooser-intro">Como você vai enviar os destaques dessa semana pra essa gravadora?</p>
+
+            <button type="button" class="report-send-chooser-option" id="reportSendChooserPlanilha">
+                <strong>Enviar com planilha de destaques</strong>
+                <span>O e-mail traz o texto padrão com o link da planilha compartilhada, atualizada com a aba da semana.</span>
+            </button>
+
+            <button type="button" class="report-send-chooser-option" id="reportSendChooserCorpo">
+                <strong>Enviar destaques no corpo do e-mail</strong>
+                <span>A tabela de destaques entra colada dentro do próprio e-mail, formatada.</span>
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 <div id="reportSendModal" class="drilldown-modal">
 
     <div class="drilldown-box maf-form-box" style="max-width:760px;">
@@ -1080,17 +1112,34 @@
             <button id="reportSendClose" class="drilldown-close" aria-label="Fechar">✕</button>
         </div>
 
-        <div class="report-send-lang-toggle" id="reportSendLangToggle">
-            <button type="button" class="report-send-lang-btn" data-lang="pt">Português</button>
-            <button type="button" class="report-send-lang-btn" data-lang="es">Espanhol</button>
-            <button type="button" class="report-send-lang-btn" data-lang="en">Inglês</button>
-        </div>
-
         <div class="maf-form-body">
+
+            <p class="report-send-to-header">Envio para <strong id="reportSendToHeaderName"></strong></p>
+
+            <div class="report-send-lang-toggle" id="reportSendLangToggle">
+                <button type="button" class="report-send-lang-btn" data-lang="pt">Português</button>
+                <button type="button" class="report-send-lang-btn" data-lang="es">Espanhol</button>
+                <button type="button" class="report-send-lang-btn" data-lang="en">Inglês</button>
+            </div>
 
             <div class="filter report-send-field">
                 <label>Destinatários <span class="report-send-field-warning">Por favor, sempre confira os endereços de e-mail antes de enviar.</span></label>
                 <input type="text" id="reportSendTo" placeholder="Preencha manualmente, ainda não configurado">
+                <p class="report-hint report-send-table-notice" id="reportSendAmbiguousWarning" style="display:none;"></p>
+                <div class="report-send-cc-toggle" id="reportSendCcToggle">
+                    <label class="report-send-cc-option">
+                        <input type="checkbox" id="reportSendCcEditorial" checked disabled>
+                        Copiar Editorial
+                    </label>
+                    <label class="report-send-cc-option">
+                        <input type="checkbox" id="reportSendCcMarketing" checked disabled>
+                        Copiar Marketing
+                    </label>
+                    <label class="report-send-cc-option">
+                        <input type="checkbox" id="reportSendCcRuben">
+                        Copiar Ruben
+                    </label>
+                </div>
             </div>
 
             <div class="filter report-send-field">
@@ -1117,6 +1166,8 @@
                 <a href="#" id="reportSendDownloadCoversLink" class="report-send-inline-link">Baixar capas da semana</a>
             </p>
 
+            <p class="report-send-attach-hint report-send-confirm-hint">Sempre confira se os lançamentos colados realmente pertencem à gravadora selecionada.</p>
+
         </div>
 
         <div class="maf-form-footer report-send-footer">
@@ -1133,6 +1184,8 @@
                     Copiar formatação e abrir Gmail para colar
                 </label>
             </div>
+
+            <p class="report-send-corpo-ready-hint" id="reportSendCorpoReadyHint" style="display:none;">Seu reporte está pronto e copiado. No próximo passo, basta colar no Gmail.</p>
 
         </div>
 
@@ -1767,14 +1820,6 @@
 
         <div class="report-toolbar-actions">
 
-            <a
-                class="data-table-link-btn report-folder-btn"
-                href="https://drive.google.com/drive/folders/1MihTbxkT_HpDcFFtYslwc26DDJnKZnIq?usp=drive_link"
-                target="_blank"
-                rel="noopener">
-                Pasta de capas
-            </a>
-
             <button type="button" id="reportSendBtn" class="data-table-link-btn">📧 Enviar reporte</button>
 
         </div>
@@ -1796,8 +1841,6 @@
         <button type="button" id="reportCopyBtn" class="data-table-csv-btn">📋 Copiar tabela</button>
 
         <button type="button" id="reportDownloadBtn" class="data-table-csv-btn">⬇ Baixar planilha (.xls)</button>
-
-        <button type="button" id="reportCoverPromptBtn" class="data-table-csv-btn">🖼️ Copiar prompt de capas</button>
 
         <button type="button" id="reportDownloadCoverBtn" class="data-table-csv-btn">⬇️ Download capas (em teste)</button>
 

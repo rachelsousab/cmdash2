@@ -27,10 +27,18 @@
  * - "attachEvidence": ACRESCENTA evidência (texto/imagens) na
  *   linha existente cujo ID bate com payload.id — não
  *   sobrescreve a evidência que já estava lá, só complementa.
+ * - "update": sobrescreve todos os campos editáveis da linha
+ *   existente cujo ID bate com payload.id.
+ * - "updateStatus": troca só o Status de Veiculação da linha
+ *   existente cujo ID bate com payload.id.
+ * - "delete": apaga (DELETA a linha inteira, deslocando as de
+ *   baixo pra cima) a linha existente cujo ID bate com
+ *   payload.id — usado pelo botão 🗑️ da tabela, pra não
+ *   precisar apagar manualmente na planilha.
  * ============================================================
  */
 
-const SHEET_NAME = "NOME_DA_ABA_AQUI"; // ajuste pro nome real da aba
+const SHEET_NAME = "Canal 500"; // ajuste pro nome real da aba
 const EVIDENCE_FOLDER_ID = "1h9FP1Bzwb6B8AUvj2J_VIHymNk5KF85_";
 const MAX_IMAGES = 3;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB
@@ -85,6 +93,10 @@ function doPost(e) {
 
     if (payload.mode === "update") {
       return handleUpdate(sheet, payload);
+    }
+
+    if (payload.mode === "delete") {
+      return handleDelete(sheet, payload);
     }
 
     return handleCreate(sheet, payload);
@@ -250,6 +262,32 @@ function handleUpdateStatus(sheet, payload) {
   }
 
   sheet.getRange(rowIndex, COL.STATUS_VEICULACAO).setValue(payload.statusVeiculacao);
+
+  return jsonResponse({ success: true, id: payload.id });
+
+}
+
+/* ============================================
+   EXCLUIR LINHA EXISTENTE (botão 🗑️ da tabela)
+   Só apaga linhas com ID real (criadas/editadas por este
+   script) — não tem como localizar com segurança as 55 linhas
+   antigas sem ID por aqui, então elas continuam exigindo
+   exclusão manual mesmo.
+============================================ */
+
+function handleDelete(sheet, payload) {
+
+  if (!payload.id) {
+    return jsonResponse({ success: false, errors: ["Nenhum ID informado."] });
+  }
+
+  const rowIndex = findRowById(sheet, payload.id);
+
+  if (!rowIndex) {
+    return jsonResponse({ success: false, errors: [`Nenhuma linha encontrada com ID ${payload.id}.`] });
+  }
+
+  sheet.deleteRow(rowIndex);
 
   return jsonResponse({ success: true, id: payload.id });
 

@@ -1,0 +1,104 @@
+====================================================================
+PASSO 1 — Nova aba "Códigos País" (agora com 3 colunas: além do
+código do próprio país, o código do GRUPO fixo ao qual ele
+pertence — pra países que sempre compartilham a mesma capa)
+====================================================================
+
+A               B        C
+País            Código   Grupo (fixo)
+Argentina       AR       AR, PY, UY
+Paraguay        PY       AR, PY, UY
+Uruguay         UY       AR, PY, UY
+Brasil          BR       BR
+Chile           CL       CL
+Colombia        CO       CO
+Costa Rica      CR       CR, NI, DO
+Nicaragua       NI       CR, NI, DO
+R. Dominicana   DO       CR, NI, DO
+Ecuador         EC       EC
+El Salvador     SV       GT, SV, HN
+Guatemala       GT       GT, SV, HN
+Honduras        HN       GT, SV, HN
+Peru            PE       PE
+
+Regra da coluna C: se o país sempre compartilha capa com outros,
+a coluna Grupo já vem pronta com o código combinado (mesma ordem
+fixa pra todo mundo daquele grupo — não importa qual país é a
+linha, o texto do grupo sai IGUAL). Se o país normalmente não
+compartilha, a coluna Grupo repete só o código dele mesmo.
+
+** Essa tabela é sua fonte de verdade. Se a Claro mudar quem
+compartilha capa com quem, o ajuste é só editar essa coluna C —
+não mexe em fórmula nem em código. **
+
+
+====================================================================
+PASSO 2 — Na planilha de Destaques, 2 colunas novas (podem ficar
+escondidas, o Gerador de Reporte não precisa mostrar elas)
+====================================================================
+
+Supondo que na planilha de Destaques:
+  A = País | C = Playlist | E = Artist
+
+--------------------------------------------------------------------
+Coluna nova 1 — "Código do grupo" (ex.: coluna K)
+Busca direto o código fixo do grupo — não depende de outras
+linhas existirem nem de texto bater entre países.
+--------------------------------------------------------------------
+=IFERROR(VLOOKUP(TRIM($A2), 'Códigos País'!$A:$C, 3, FALSE), "?")
+
+--------------------------------------------------------------------
+Coluna nova 2 — "Nome do arquivo esperado" (ex.: coluna L)
+--------------------------------------------------------------------
+=IF(E2="",
+   K2 & " - " & TRIM(C2) & ".jpg",
+   K2 & " - " & TRIM(C2) & " - " & TRIM(E2) & ".jpg"
+)
+
+
+====================================================================
+RESULTADO — exemplos com o agrupamento fixo:
+====================================================================
+
+Linha com País = "Guatemala" -> AR? não, GT, SV, HN
+  "GT, SV, HN - Novedades Reggaetón - Ozuna.jpg"
+
+Linha com País = "Honduras" (mesma playlist/artista/semana)
+  "GT, SV, HN - Novedades Reggaetón - Ozuna.jpg"   <- idêntico,
+  como deve ser: uma linha por país, mas o NOME DO ARQUIVO sai
+  igual pros três, porque o grupo é fixo.
+
+Linha com País = "Brasil" (não agrupado)
+  "BR - Novidades Gospel - Juliannys, Gabi Rocha.jpg"
+
+Linha com País = "R. Dominicana"
+  "CR, NI, DO - Bachata da Semana - Alvin & Mando.jpg"
+
+
+====================================================================
+OBSERVAÇÕES
+====================================================================
+
+- Antes eu tinha proposto descobrir o agrupamento dinamicamente
+  (juntando países que tivessem Playlist+Artist+Data idênticos
+  entre si). Troquei pelo agrupamento FIXO que você pediu — é
+  mais robusto (não depende de digitação idêntica em várias
+  linhas) e reflete o que já é uma decisão editorial da Claro,
+  não uma coincidência de dados.
+
+- Se um país do grupo, numa semana específica, tiver uma capa
+  SÓ dele (exceção à regra, como aconteceu no print de
+  "PERU Y ECUADOR" que teve arquivo só de um dos dois), o nome
+  gerado pela fórmula vai vir com o grupo inteiro mesmo assim —
+  nesse caso o time de capas ajusta manualmente o nome na hora
+  de salvar (é a exceção, não a regra).
+
+- Se "Código do grupo" vier "?", o texto da coluna País não bate
+  com nenhuma linha da aba "Códigos País" — útil pra pegar erro
+  de digitação (acento, espaço) via formatação condicional.
+
+- Peru e Equador ficaram como países independentes na tabela
+  (não formam grupo fixo) porque nos exemplos que vi eles
+  apareceram tanto juntos quanto separados — se isso virar padrão
+  fixo pra vocês, é só adicionar as duas linhas com Grupo =
+  "EC, PE" na tabela.

@@ -181,7 +181,8 @@ const ReportSend = {
      * anterior: em "corpo", só o botão de colar tabela (a tabela
      * vai no texto) e a mensagem fixa de que o envio já sai
      * copiado; em "planilha", só o botão de atualizar planilha e os
-     * dois modos de envio (direto/copiar), como já era antes.
+     * dois modos de envio (direto/copiar), como já era antes, com
+     * "Copiar formatação" marcado por padrão a cada abertura.
      */
     renderForMode() {
 
@@ -192,6 +193,12 @@ const ReportSend = {
 
         document.getElementById("reportSendModeToggle").style.display = isCorpo ? "none" : "";
         document.getElementById("reportSendCorpoReadyHint").style.display = isCorpo ? "" : "none";
+
+        if (!isCorpo) {
+
+            document.querySelector('input[name="reportSendMode"][value="copiar"]').checked = true;
+
+        }
 
         this.updateModeAvailability();
 
@@ -297,24 +304,35 @@ const ReportSend = {
      * Usa o corpo padrão da própria gravadora (coluna "E-mail
      * padrão" da planilha) sempre que existir, independente do
      * idioma marcado (mesmo motivo do assunto, ver buildSubject).
-     * Se o texto da célula tiver um trecho entre colchetes duplos
-     * (ex.: "confira [[aqui]] a tabela"), esse trecho vira o link
-     * clicável, exatamente onde foi escrito. Sem colchetes no
-     * texto, o placeholder entra como um parágrafo novo no final.
-     * "Colar tabela de destaques" substitui esse link pela tabela;
-     * "Atualizar planilha de destaque" transforma ele num link de
-     * verdade pra planilha. Sem corpo padrão configurado pra essa
-     * gravadora, cai num texto-modelo genérico editável.
+     *
+     * No modo "planilha", um trecho entre colchetes duplos (ex.:
+     * "confira [[aqui]] a tabela") vira o link clicável, exatamente
+     * onde foi escrito. Sem colchetes no texto, o placeholder entra
+     * como um parágrafo novo no final. "Atualizar planilha de
+     * destaque" transforma ele num link de verdade pra planilha.
+     *
+     * No modo "corpo", os colchetes duplos não fazem sentido (a
+     * tabela vai onde a pessoa clicar com "Colar tabela de
+     * destaques", não num ponto fixo do texto padrão) — o texto
+     * sai normal, sem os colchetes e sem virar link, e nenhum
+     * placeholder extra é acrescentado (ver textToParagraphs).
+     *
+     * Sem corpo padrão configurado pra essa gravadora, cai num
+     * texto-modelo genérico editável.
      */
     buildBodyTemplate(gravadora, idioma) {
 
         const labels = this.LABELS[idioma] || this.LABELS.pt;
+
+        const isCorpo = this._mode === "corpo";
 
         const genericPlaceholderHtml = `<p><a href="#" class="report-send-placeholder-link" data-placeholder="tabela-link">${this.escapeHtml(labels.placeholderText)}</a></p>`;
 
         if (this._currentLookup && this._currentLookup.corpoPadrao) {
 
             const { html, hasMarker } = this.textToParagraphs(this._currentLookup.corpoPadrao);
+
+            if (isCorpo) return html;
 
             return hasMarker ? html : html + genericPlaceholderHtml;
 
@@ -323,7 +341,7 @@ const ReportSend = {
         return [
             `<p>${this.escapeHtml(labels.greeting(gravadora))}</p>`,
             `<p>${this.escapeHtml(labels.intro)}</p>`,
-            genericPlaceholderHtml,
+            isCorpo ? "" : genericPlaceholderHtml,
             `<p>${this.escapeHtml(labels.closing)}</p>`
         ].join("");
 
@@ -336,11 +354,15 @@ const ReportSend = {
      * entre colchetes duplos, tipo "[[clique aqui]]", vira o link
      * clicável (placeholder) bem naquele ponto do texto — devolve
      * também se achou algum, pra quem chamou saber se ainda
-     * precisa acrescentar o placeholder em outro lugar.
+     * precisa acrescentar o placeholder em outro lugar. No modo
+     * "corpo" (ver buildBodyTemplate), os colchetes duplos são só
+     * ignorados/removidos, sobrando o texto normal.
      */
     textToParagraphs(text) {
 
         let hasMarker = false;
+
+        const isCorpo = this._mode === "corpo";
 
         const html = text
             .split(/\n{2,}/)
@@ -353,6 +375,8 @@ const ReportSend = {
                 escaped = this.linkifyHandles(escaped);
 
                 escaped = escaped.replace(/\[\[(.+?)\]\]/g, (match, label) => {
+
+                    if (isCorpo) return label;
 
                     hasMarker = true;
 
@@ -387,11 +411,19 @@ const ReportSend = {
      * não pode TERMINAR em ponto (só interno, ex.: "@claro.musica"),
      * senão o ponto final de frase ("...@handle." de fim de frase)
      * entrava junto no link e na URL.
+     *
+     * A classe "report-send-ig-link" marca esse link como especial
+     * pro htmlToPlainText: diferente do link da planilha ([[texto]])
+     * e de um link manual (botão 🔗), que no modo "Enviar direto"
+     * sempre mostram a URL entre parênteses, o @handle no modo
+     * direto fica só o texto, sem link nenhum (nem clicável, nem a
+     * URL por extenso) — só o clique/formatação copiada é que
+     * precisa do link de verdade.
      */
     linkifyHandles(escapedText) {
 
         return escapedText.replace(/(^|\s)@([a-zA-Z0-9_](?:[a-zA-Z0-9._]*[a-zA-Z0-9_])?)/g, (match, prefix, handle) =>
-            `${prefix}<a href="https://www.instagram.com/${handle}" target="_blank" rel="noopener">@${handle}</a>`
+            `${prefix}<a href="https://www.instagram.com/${handle}" target="_blank" rel="noopener" class="report-send-ig-link">@${handle}</a>`
         );
 
     },
@@ -854,6 +886,12 @@ const ReportSend = {
      * "text (URL)" pra links de verdade (href diferente de "#" —
      * ainda não resolvido), só o texto quando o placeholder nunca
      * foi preenchido. Preserva parágrafos como linha em branco.
+     *
+     * Exceção: link de @handle do Instagram (linkifyHandles, classe
+     * "report-send-ig-link") sempre fica só o texto no modo direto,
+     * mesmo já tendo uma URL de verdade — diferente do link da
+     * planilha ([[texto]]) e de um link manual (botão 🔗), que
+     * sempre mostram a URL entre parênteses.
      */
     htmlToPlainText(root) {
 
@@ -871,6 +909,8 @@ const ReportSend = {
 
                 const text = node.textContent;
                 const href = node.getAttribute("href") || "";
+
+                if (node.classList.contains("report-send-ig-link")) return text;
 
                 return (href && href !== "#") ? `${text} (${href})` : text;
 

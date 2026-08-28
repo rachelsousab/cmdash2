@@ -4713,6 +4713,18 @@ table.data-table{
 
 }
 
+.report-send-editor p{
+
+    margin-bottom:10px;
+
+}
+
+.report-send-editor p:last-child{
+
+    margin-bottom:0;
+
+}
+
 .report-send-editor:focus{
 
     outline:2px solid var(--primary);

@@ -4773,6 +4773,19 @@ table.data-table{
 
 }
 
+/* Clone temporário usado só na hora de "Copiar formatação" (ver
+   ReportSend.buildSafeBodyClone). Sem isso, alguns navegadores
+   gravam a cor de destaque da seleção (o azul do texto selecionado)
+   como fundo de verdade no HTML copiado, colando um fundo azul feio
+   no Gmail — não mexe em cores de verdade do conteúdo (ex.: as
+   células coloridas de uma tabela de destaques colada). */
+.report-send-copy-clone::selection,
+.report-send-copy-clone *::selection{
+
+    background-color:transparent;
+
+}
+
 .report-send-to-header{
 
     font-size:.78rem;

@@ -937,6 +937,12 @@ const ReportSend = {
         clone.style.left = "-9999px";
         clone.style.top = "0";
 
+        // Sem isso, alguns navegadores gravam a cor de destaque da
+        // seleção (o azul de "texto selecionado") como fundo inline
+        // de verdade no HTML copiado, e esse fundo aparece colado no
+        // Gmail depois — feio e sem relação com a formatação real.
+        clone.classList.add("report-send-copy-clone");
+
         document.body.appendChild(clone);
 
         return clone;

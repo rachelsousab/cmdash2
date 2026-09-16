@@ -473,14 +473,39 @@ const ReportSend = {
 
         });
 
+        document.getElementById("reportSendConfirmClose").addEventListener("click", () => this.closeConfirm());
+
+        document.getElementById("reportSendConfirmModal").addEventListener("click", (event) => {
+
+            if (event.target.id === "reportSendConfirmModal") this.closeConfirm();
+
+        });
+
+        document.getElementById("reportSendConfirmRetryLink").addEventListener("click", (event) => {
+
+            event.preventDefault();
+
+            this.sendEmail();
+
+        });
+
+        document.getElementById("reportSendConfirmDoneBtn").addEventListener("click", () => {
+
+            this.closeConfirm();
+            this.close();
+
+        });
+
         document.addEventListener("keydown", (event) => {
 
             if (event.key !== "Escape") return;
 
+            const confirmModal = document.getElementById("reportSendConfirmModal");
             const modal = document.getElementById("reportSendModal");
             const chooser = document.getElementById("reportSendChooserModal");
 
-            if (modal.classList.contains("open")) this.close();
+            if (confirmModal.classList.contains("open")) this.closeConfirm();
+            else if (modal.classList.contains("open")) this.close();
             else if (chooser.classList.contains("open")) this.closeChooser();
 
         });
@@ -1082,6 +1107,51 @@ const ReportSend = {
             this.restoreUnresolvedPlaceholders(replacements);
 
         }
+
+        this.showConfirm();
+
+    },
+
+    /**
+     * Popup de confirmação mostrado depois de abrir o Gmail (nos
+     * dois modos de envio) — como o "envio" de verdade só acontece
+     * quando a pessoa clica em enviar lá dentro do Gmail (o
+     * dashboard só prepara/abre o rascunho), esse popup serve pra
+     * lembrete + registro de que o passo por aqui foi concluído, com
+     * um link de retentativa caso algo tenha dado errado (reabre o
+     * Gmail com o mesmo conteúdo, chamando sendEmail() de novo).
+     */
+    showConfirm() {
+
+        const gravadora = ReportDashboard.filters.gravadora;
+        const semana = ReportDashboard.filters.semana;
+        const territorio = ReportDashboard.filters.territorio;
+
+        const territorioTexto =
+            territorio === "Brasil" ? "no Brasil"
+                : territorio === "LatAm" ? "na LatAm"
+                    : "em todos os territórios";
+
+        const message = document.getElementById("reportSendConfirmMessage");
+
+        if (message) {
+
+            message.textContent =
+                `E-mail enviado para ${gravadora}, referente aos destaques da semana ${semana} ${territorioTexto}.`;
+
+        }
+
+        document.getElementById("reportSendConfirmModal").classList.add("open");
+
+    },
+
+    closeConfirm() {
+
+        const modal = document.getElementById("reportSendConfirmModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("open");
 
     },
 

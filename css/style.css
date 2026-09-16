@@ -4941,6 +4941,34 @@ table.data-table{
 
 }
 
+.report-send-confirm-text{
+
+    font-size:.85rem;
+
+    color:var(--text);
+
+    line-height:1.5;
+
+    margin:0;
+
+}
+
+.report-send-confirm-retry{
+
+    font-size:.78rem;
+
+    color:var(--text-light);
+
+    margin:0;
+
+}
+
+#reportSendConfirmDoneBtn{
+
+    align-self:flex-end;
+
+}
+
 .report-send-chooser-intro{
 
     font-size:.82rem;
@@ -5021,7 +5049,11 @@ table.data-table{
 
     align-items:center;
 
+    justify-content:flex-end;
+
     gap:8px;
+
+    flex-wrap:wrap;
 
 }
 

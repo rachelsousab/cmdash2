@@ -24,6 +24,7 @@ const ReportCoverDownload = {
     _zipUrl: "",
     _bound: false,
     _notFound: [],
+    _isSingleFile: false,
 
     // Chamado quando a pessoa "resolveu" a busca de capas: ou clicou
     // no download de verdade (zip/imagem), ou a busca voltou vazia
@@ -47,6 +48,7 @@ const ReportCoverDownload = {
         this._formatCountry = formatCountry || ((pais) => pais);
         this._meta = meta || {};
         this._zipUrl = "";
+        this._isSingleFile = false;
         this._onComplete = onComplete || null;
 
         this.bindEvents();
@@ -54,6 +56,7 @@ const ReportCoverDownload = {
         const modal = document.getElementById("reportCoverDownloadModal");
         const subtitle = document.getElementById("reportCoverDownloadSubtitle");
         const zipBtn = document.getElementById("reportCoverDownloadZipBtn");
+        const cancelBtn = document.getElementById("reportCoverDownloadCancelBtn");
 
         if (subtitle) subtitle.textContent = `${rows.length} ${rows.length === 1 ? "capa" : "capas"}`;
 
@@ -61,6 +64,8 @@ const ReportCoverDownload = {
             zipBtn.disabled = true;
             zipBtn.textContent = "⬇️ Baixar tudo (.zip)";
         }
+
+        if (cancelBtn) cancelBtn.textContent = "Fechar";
 
         this.renderLoading();
 
@@ -98,6 +103,12 @@ const ReportCoverDownload = {
             if (!this._zipUrl) return;
 
             window.open(this._zipUrl, "_blank");
+
+            const cancelBtn = document.getElementById("reportCoverDownloadCancelBtn");
+
+            if (cancelBtn) {
+                cancelBtn.textContent = this._isSingleFile ? "Imagem baixada, voltar" : "Capas baixadas, voltar";
+            }
 
             if (this._onComplete) this._onComplete();
 
@@ -174,6 +185,7 @@ const ReportCoverDownload = {
 
         this._zipUrl = data.zipUrl || "";
         this._notFound = notFound;
+        this._isSingleFile = !!data.isSingleFile;
 
         // Nada encontrado -> não tem o que baixar, mas a pessoa já
         // clicou e conferiu a notificação. Com capas encontradas, só

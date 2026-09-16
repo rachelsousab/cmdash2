@@ -5015,6 +5015,52 @@ table.data-table{
 
 }
 
+.report-send-steps{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+}
+
+.report-send-step-num{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    width:18px;
+
+    height:18px;
+
+    border-radius:50%;
+
+    background:var(--border);
+
+    color:var(--text-light);
+
+    font-size:.68rem;
+
+    font-weight:700;
+
+    flex-shrink:0;
+
+}
+
+.report-send-step-check{
+
+    color:var(--green);
+
+    font-size:.85rem;
+
+    font-weight:700;
+
+}
+
 .report-send-mode-toggle{
 
     display:flex;

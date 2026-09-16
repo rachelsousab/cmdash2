@@ -18,7 +18,7 @@
          mexer em qualquer .js/.css, troque esse valor (ex.: data de
          hoje + letra) em TODOS os <script src="js/..."> e no
          <link href="css/style.css">. -->
-    <link rel="stylesheet" href="css/style.css?v=20260828b">
+    <link rel="stylesheet" href="css/style.css?v=20260916a">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -1161,6 +1161,7 @@
                     <button type="button" id="reportSendLinkBtn" title="Inserir link">🔗</button>
                     <span class="report-send-toolbar-sep"></span>
                     <button type="button" id="reportSendPasteTableBtn" class="report-send-toolbar-text-btn">Colar tabela de destaques</button>
+                    <span class="report-send-step-num" id="reportSendUpdateSheetStepNum">1</span>
                     <button type="button" id="reportSendUpdateSheetBtn" class="report-send-toolbar-text-btn">Atualizar planilha de destaque</button>
                     <button type="button" id="reportSendRemoveTableBtn" class="report-send-toolbar-text-btn report-send-toolbar-remove-btn" style="display:none;">Remover tabela</button>
                 </div>
@@ -1169,8 +1170,7 @@
             </div>
 
             <p class="report-send-attach-hint">
-                Faça download das capas da semana e anexe no Gmail no próximo passo.
-                <a href="#" id="reportSendDownloadCoversLink" class="report-send-inline-link">Baixar capas da semana</a>
+                As capas baixadas não são anexadas automaticamente — abra os arquivos e anexe no Gmail antes de mandar.
             </p>
 
             <p class="report-send-attach-hint report-send-confirm-hint">Sempre confira se os lançamentos colados realmente pertencem à gravadora selecionada.</p>
@@ -1179,7 +1179,16 @@
 
         <div class="maf-form-footer report-send-footer">
 
-            <button type="button" id="reportSendGmailBtn" class="data-table-link-btn">✉️ Enviar e-mail</button>
+            <div class="report-send-steps">
+
+                <span class="report-send-step-num" id="reportSendCoversStepNum">2</span>
+                <button type="button" id="reportSendCoversBtn" class="data-table-csv-btn">⬇️ Baixar capas</button>
+                <span class="report-send-step-check" id="reportSendCoversCheck" style="display:none;" title="Capas conferidas">✔</span>
+
+                <span class="report-send-step-num" id="reportSendGmailStepNum">3</span>
+                <button type="button" id="reportSendGmailBtn" class="data-table-link-btn">✉️ Enviar e-mail</button>
+
+            </div>
 
             <div class="report-send-mode-toggle" id="reportSendModeToggle">
                 <label class="report-send-mode-option">
@@ -1826,8 +1835,6 @@
         </div>
 
         <div class="report-toolbar-actions">
-
-            <button type="button" id="reportDownloadCoverBtn" class="data-table-link-btn">⬇️ Download capas</button>
 
             <button type="button" id="reportSendBtn" class="data-table-link-btn">📧 Enviar reporte (em teste)</button>
 
@@ -2656,71 +2663,71 @@
     <!-- JAVASCRIPT -->
     <!-- ========================================================= -->
 
-    <script src="js/config.js?v=20260828b"></script>
+    <script src="js/config.js?v=20260916a"></script>
 
-    <script src="js/actions-merge.js?v=20260828b"></script>
+    <script src="js/actions-merge.js?v=20260916a"></script>
 
-    <script src="js/data.js?v=20260828b"></script>
+    <script src="js/data.js?v=20260916a"></script>
 
-    <script src="js/metrics.js?v=20260828b"></script>
+    <script src="js/metrics.js?v=20260916a"></script>
 
-    <script src="js/goals.js?v=20260828b"></script>
+    <script src="js/goals.js?v=20260916a"></script>
 
-    <script src="js/social-data.js?v=20260828b"></script>
+    <script src="js/social-data.js?v=20260916a"></script>
 
-    <script src="js/social-metrics.js?v=20260828b"></script>
+    <script src="js/social-metrics.js?v=20260916a"></script>
 
-    <script src="js/social-table.js?v=20260828b"></script>
+    <script src="js/social-table.js?v=20260916a"></script>
 
-    <script src="js/social-form.js?v=20260828b"></script>
+    <script src="js/social-form.js?v=20260916a"></script>
 
-    <script src="js/social-recent-table.js?v=20260828b"></script>
+    <script src="js/social-recent-table.js?v=20260916a"></script>
 
-    <script src="js/social-insights.js?v=20260828b"></script>
+    <script src="js/social-insights.js?v=20260916a"></script>
 
-    <script src="js/social-charts.js?v=20260828b"></script>
+    <script src="js/social-charts.js?v=20260916a"></script>
 
-    <script src="js/social-dashboard.js?v=20260828b"></script>
+    <script src="js/social-dashboard.js?v=20260916a"></script>
 
-    <script src="js/data-table.js?v=20260828b"></script>
+    <script src="js/data-table.js?v=20260916a"></script>
 
-    <script src="js/highlights-data.js?v=20260828b"></script>
+    <script src="js/highlights-data.js?v=20260916a"></script>
 
-    <script src="js/highlights-metrics.js?v=20260828b"></script>
+    <script src="js/highlights-metrics.js?v=20260916a"></script>
 
-    <script src="js/highlights-charts.js?v=20260828b"></script>
+    <script src="js/highlights-charts.js?v=20260916a"></script>
 
-    <script src="js/highlights-dashboard.js?v=20260828b"></script>
+    <script src="js/highlights-dashboard.js?v=20260916a"></script>
 
-    <script src="js/analises-metrics.js?v=20260828b"></script>
+    <script src="js/analises-metrics.js?v=20260916a"></script>
 
-    <script src="js/analises-dashboard.js?v=20260828b"></script>
+    <script src="js/analises-dashboard.js?v=20260916a"></script>
 
-    <script src="js/report-dashboard.js?v=20260828b"></script>
+    <script src="js/report-dashboard.js?v=20260916a"></script>
 
-    <script src="js/report-cover-download.js?v=20260828b"></script>
+    <script src="js/report-cover-download.js?v=20260916a"></script>
 
-    <script src="js/report-recipients-data.js?v=20260828b"></script>
+    <script src="js/report-recipients-data.js?v=20260916a"></script>
 
-    <script src="js/report-send.js?v=20260828b"></script>
+    <script src="js/report-send.js?v=20260916a"></script>
 
-    <script src="js/pivot-data.js?v=20260828b"></script>
+    <script src="js/pivot-data.js?v=20260916a"></script>
 
-    <script src="js/pivot-dashboard.js?v=20260828b"></script>
+    <script src="js/pivot-dashboard.js?v=20260916a"></script>
 
-    <script src="js/artist-data.js?v=20260828b"></script>
+    <script src="js/artist-data.js?v=20260916a"></script>
 
-    <script src="js/artist-dashboard.js?v=20260828b"></script>
+    <script src="js/artist-dashboard.js?v=20260916a"></script>
 
-    <script src="js/manual-actions.js?v=20260828b"></script>
+    <script src="js/manual-actions.js?v=20260916a"></script>
 
-    <script src="js/canal500-data.js?v=20260828b"></script>
+    <script src="js/canal500-data.js?v=20260916a"></script>
 
-    <script src="js/canal500-form.js?v=20260828b"></script>
+    <script src="js/canal500-form.js?v=20260916a"></script>
 
-    <script src="js/auth.js?v=20260828b"></script>
+    <script src="js/auth.js?v=20260916a"></script>
 
-    <script src="js/app.js?v=20260828b"></script>
+    <script src="js/app.js?v=20260916a"></script>
 
 </body>
 

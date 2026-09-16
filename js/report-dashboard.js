@@ -239,25 +239,6 @@ const ReportDashboard = {
 
         });
 
-        document.getElementById("reportDownloadCoverBtn").addEventListener("click", () => {
-
-            const rows = this.getFilteredRows().filter(row => row.destaque === "CAPA");
-
-            if (!rows.length) {
-                alert("Nenhuma capa (Capa/Portada/Cover) encontrada para esse recorte.");
-                return;
-            }
-
-            ReportCoverDownload.open(rows, this.formatCountry.bind(this), {
-
-                territorio: this.filters.territorio,
-                gravadora: this.filters.gravadora || "Todas",
-                semana: this.filters.semana
-
-            });
-
-        });
-
     },
 
     /**

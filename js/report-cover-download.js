@@ -25,6 +25,13 @@ const ReportCoverDownload = {
     _bound: false,
     _notFound: [],
 
+    // Chamado quando a pessoa "resolveu" a busca de capas: ou clicou
+    // no download de verdade (zip/imagem), ou a busca voltou vazia
+    // (nada pra baixar, mas ela já conferiu). Usado pelo popup de
+    // "Enviar reporte" (js/report-send.js) pra liberar o botão de
+    // enviar só depois desse passo.
+    _onComplete: null,
+
     // Mesmo texto usado no "Copiar prompt de capas" do Gerador de
     // Reporte (js/report-dashboard.js) — aqui, porém, a lista que
     // acompanha o texto é só das capas que o Drive NÃO encontrou
@@ -34,12 +41,13 @@ const ReportCoverDownload = {
     // as que ainda faltam).
     COVER_PROMPT_INTRO: "Encontre, nessa pasta, as imagens referentes às capas das playlists listadas abaixo, por país.",
 
-    open(rows, formatCountry, meta) {
+    open(rows, formatCountry, meta, onComplete) {
 
         this._rows = rows;
         this._formatCountry = formatCountry || ((pais) => pais);
         this._meta = meta || {};
         this._zipUrl = "";
+        this._onComplete = onComplete || null;
 
         this.bindEvents();
 
@@ -87,7 +95,11 @@ const ReportCoverDownload = {
 
         document.getElementById("reportCoverDownloadZipBtn").addEventListener("click", () => {
 
-            if (this._zipUrl) window.open(this._zipUrl, "_blank");
+            if (!this._zipUrl) return;
+
+            window.open(this._zipUrl, "_blank");
+
+            if (this._onComplete) this._onComplete();
 
         });
 
@@ -162,6 +174,12 @@ const ReportCoverDownload = {
 
         this._zipUrl = data.zipUrl || "";
         this._notFound = notFound;
+
+        // Nada encontrado -> não tem o que baixar, mas a pessoa já
+        // clicou e conferiu a notificação. Com capas encontradas, só
+        // marca como resolvido quando ela de fato clicar em baixar
+        // (ver o listener do reportCoverDownloadZipBtn acima).
+        if (!found.length && this._onComplete) this._onComplete();
 
         if (subtitle) {
             subtitle.textContent = `${found.length} encontrada${found.length === 1 ? "" : "s"} de ${this._rows.length}`;

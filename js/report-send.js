@@ -39,6 +39,14 @@ const ReportSend = {
     // que abre antes deste, ver openChooser()/selectMode().
     _mode: null,
 
+    // Passo "Baixar capas" já resolvido nesta abertura do popup —
+    // true quando a pessoa baixou de verdade (zip/imagem) OU quando
+    // a busca voltou sem nenhuma capa pro recorte (nada pra baixar,
+    // mas ela já conferiu). Zerado toda vez que o popup abre (ver
+    // open()) — bloqueia "Enviar e-mail" enquanto for false (ver
+    // updateModeAvailability()).
+    _coversChecked: false,
+
     // Última posição do cursor dentro do corpo do e-mail (Range),
     // guardada a cada clique/tecla ali dentro — é onde "Colar
     // tabela de destaques" insere a tabela, em vez de sempre no
@@ -152,6 +160,8 @@ const ReportSend = {
 
         this._idioma = ReportDashboard.filters.idioma || "pt";
 
+        this._coversChecked = false;
+
         const lookup = ReportRecipientsData.lookup(territorio, gravadora);
 
         this._currentLookup = lookup;
@@ -183,6 +193,11 @@ const ReportSend = {
      * copiado; em "planilha", só o botão de atualizar planilha e os
      * dois modos de envio (direto/copiar), como já era antes, com
      * "Copiar formatação" marcado por padrão a cada abertura.
+     *
+     * Também numera os passos do rodapé: no modo "planilha",
+     * "Atualizar planilha" (fixo, numerado direto no HTML) é o
+     * passo 1, então "Baixar capas"/"Enviar e-mail" viram 2 e 3; no
+     * modo "corpo" esse passo nem existe, então eles voltam a 1 e 2.
      */
     renderForMode() {
 
@@ -190,9 +205,13 @@ const ReportSend = {
 
         document.getElementById("reportSendPasteTableBtn").style.display = isCorpo ? "" : "none";
         document.getElementById("reportSendUpdateSheetBtn").style.display = isCorpo ? "none" : "";
+        document.getElementById("reportSendUpdateSheetStepNum").style.display = isCorpo ? "none" : "";
 
         document.getElementById("reportSendModeToggle").style.display = isCorpo ? "none" : "";
         document.getElementById("reportSendCorpoReadyHint").style.display = isCorpo ? "" : "none";
+
+        document.getElementById("reportSendCoversStepNum").textContent = isCorpo ? "1" : "2";
+        document.getElementById("reportSendGmailStepNum").textContent = isCorpo ? "2" : "3";
 
         if (!isCorpo) {
 
@@ -514,13 +533,7 @@ const ReportSend = {
 
         document.getElementById("reportSendBody").addEventListener("input", () => this.updateModeAvailability());
 
-        document.getElementById("reportSendDownloadCoversLink").addEventListener("click", (event) => {
-
-            event.preventDefault();
-
-            this.downloadCovers();
-
-        });
+        document.getElementById("reportSendCoversBtn").addEventListener("click", () => this.downloadCovers());
 
         document.getElementById("reportSendGmailBtn").addEventListener("click", () => this.sendEmail());
 
@@ -812,6 +825,12 @@ const ReportSend = {
         if (!rows.length) {
 
             alert("Nenhuma capa (Capa/Portada/Cover) encontrada para esse recorte.");
+
+            // Não há capa nenhuma pra esse recorte -> não tem o que
+            // baixar, mas a pessoa já clicou e conferiu, então o
+            // passo conta como resolvido (ver updateModeAvailability).
+            this.markCoversChecked();
+
             return;
 
         }
@@ -822,7 +841,20 @@ const ReportSend = {
             gravadora: ReportDashboard.filters.gravadora || "Todas",
             semana: ReportDashboard.filters.semana
 
-        });
+        }, () => this.markCoversChecked());
+
+    },
+
+    /**
+     * Marca o passo "Baixar capas" como resolvido (ver
+     * _coversChecked acima) e reavalia se "Enviar e-mail" já pode
+     * ser liberado.
+     */
+    markCoversChecked() {
+
+        this._coversChecked = true;
+
+        this.updateModeAvailability();
 
     },
 
@@ -833,13 +865,17 @@ const ReportSend = {
      * automaticamente, com um aviso. No modo "corpo" esses radios
      * nem aparecem (ver renderForMode()), então isso não se aplica.
      *
-     * Também trava o botão "Enviar e-mail" enquanto o link da
-     * planilha ([[texto]]) ainda não foi resolvido por "Atualizar
-     * planilha de destaque" — com uma dica ao passar o mouse
-     * explicando o motivo. Sem nenhum [[texto]] no corpo (texto
-     * padrão sem marcador, ou modo "corpo" onde ele nem chega a
-     * virar link), não há nada esperando resolução, então o botão
-     * fica liberado normalmente.
+     * Também trava o botão "Enviar e-mail" até os passos anteriores
+     * estarem resolvidos:
+     * - "Atualizar planilha de destaque" (só no modo "planilha"),
+     *   verificado pelo link da planilha ([[texto]]) ainda não
+     *   resolvido. Sem nenhum [[texto]] no corpo (texto padrão sem
+     *   marcador, ou modo "corpo" onde ele nem chega a virar link),
+     *   não há nada esperando resolução por aqui.
+     * - "Baixar capas" (os dois modos), verificado por
+     *   this._coversChecked (ver markCoversChecked()).
+     * Uma dica ao passar o mouse no botão desabilitado explica o
+     * que falta.
      */
     updateModeAvailability() {
 
@@ -864,15 +900,25 @@ const ReportSend = {
 
         }
 
+        const coversCheck = document.getElementById("reportSendCoversCheck");
+
+        if (coversCheck) coversCheck.style.display = this._coversChecked ? "" : "none";
+
         const sendBtn = document.getElementById("reportSendGmailBtn");
         const placeholder = this.findPlaceholder();
         const placeholderHref = placeholder ? (placeholder.getAttribute("href") || "") : "";
         const linkPendente = !!placeholder && (placeholderHref === "#" || placeholderHref === "");
+        const coversPendente = !this._coversChecked;
 
-        sendBtn.disabled = linkPendente;
+        sendBtn.disabled = linkPendente || coversPendente;
 
-        sendBtn.title = linkPendente
-            ? "Clique em \"Atualizar planilha de destaque\" antes de enviar."
+        const pendingSteps = [];
+
+        if (linkPendente) pendingSteps.push("atualizar a planilha de destaque");
+        if (coversPendente) pendingSteps.push("baixar as capas");
+
+        sendBtn.title = pendingSteps.length
+            ? `Antes de enviar, é preciso: ${pendingSteps.join(" e ")}.`
             : "";
 
     },

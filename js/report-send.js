@@ -897,16 +897,23 @@ const ReportSend = {
      *   sucesso — enquanto isso, fica desabilitado com uma dica. No
      *   modo "corpo" esse passo nem existe, então "Baixar capas" já
      *   nasce destravado.
-     * - "Enviar e-mail" só destrava depois dos dois passos
+     * - No modo "corpo", "Colar tabela de destaques" também é
+     *   obrigatório — sem uma tabela colada em algum ponto do
+     *   texto, "Enviar e-mail" fica bloqueado com um aviso fixo
+     *   (não só dica ao passar o mouse, já que não há um botão de
+     *   passo dedicado a isso pra explicar sozinho).
+     * - "Enviar e-mail" só destrava depois de todos os passos
      *   anteriores resolvidos: o link da planilha (só no modo
      *   "planilha" — sem nenhum [[texto]] no corpo, ou no modo
      *   "corpo" onde ele nem chega a virar link, não há nada
-     *   esperando resolução por aqui) e this._coversChecked (ver
-     *   markCoversChecked()).
+     *   esperando resolução por aqui), a tabela colada (só no modo
+     *   "corpo") e this._coversChecked (ver markCoversChecked()).
      * Uma dica ao passar o mouse nos botões desabilitados explica o
      * que falta.
      */
     updateModeAvailability() {
+
+        const isCorpo = this._mode === "corpo";
 
         const body = document.getElementById("reportSendBody");
         const hasTable = !!body.querySelector("table");
@@ -918,9 +925,15 @@ const ReportSend = {
 
         diretoInput.disabled = hasTable;
 
-        notice.style.display = (hasTable && this._mode !== "corpo") ? "" : "none";
+        notice.style.display = (hasTable && !isCorpo) ? "" : "none";
 
-        removeBtn.style.display = (hasTable && this._mode === "corpo") ? "" : "none";
+        removeBtn.style.display = (hasTable && isCorpo) ? "" : "none";
+
+        const tablePendente = isCorpo && !hasTable;
+
+        const requiredNotice = document.getElementById("reportSendTableRequiredNotice");
+
+        if (requiredNotice) requiredNotice.style.display = tablePendente ? "" : "none";
 
         if (hasTable && diretoInput.checked) {
 
@@ -959,11 +972,12 @@ const ReportSend = {
         const sendBtn = document.getElementById("reportSendGmailBtn");
         const coversPendente = !this._coversChecked;
 
-        sendBtn.disabled = linkPendente || coversPendente;
+        sendBtn.disabled = linkPendente || coversPendente || tablePendente;
 
         const pendingSteps = [];
 
         if (linkPendente) pendingSteps.push("atualizar a planilha de destaque");
+        if (tablePendente) pendingSteps.push("colar a tabela de destaques no corpo do e-mail");
         if (coversPendente) pendingSteps.push("baixar as capas");
 
         sendBtn.title = pendingSteps.length

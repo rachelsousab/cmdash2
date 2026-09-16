@@ -890,16 +890,20 @@ const ReportSend = {
      * automaticamente, com um aviso. No modo "corpo" esses radios
      * nem aparecem (ver renderForMode()), então isso não se aplica.
      *
-     * Também trava o botão "Enviar e-mail" até os passos anteriores
-     * estarem resolvidos:
-     * - "Atualizar planilha de destaque" (só no modo "planilha"),
-     *   verificado pelo link da planilha ([[texto]]) ainda não
-     *   resolvido. Sem nenhum [[texto]] no corpo (texto padrão sem
-     *   marcador, ou modo "corpo" onde ele nem chega a virar link),
-     *   não há nada esperando resolução por aqui.
-     * - "Baixar capas" (os dois modos), verificado por
-     *   this._coversChecked (ver markCoversChecked()).
-     * Uma dica ao passar o mouse no botão desabilitado explica o
+     * Também impõe a ordem dos passos no modo "planilha" (1.
+     * Atualizar planilha -> 2. Baixar capas -> 3. Enviar e-mail):
+     * - "Baixar capas" só destrava depois que "Atualizar planilha
+     *   de destaque" resolver o link da planilha ([[texto]]) com
+     *   sucesso — enquanto isso, fica desabilitado com uma dica. No
+     *   modo "corpo" esse passo nem existe, então "Baixar capas" já
+     *   nasce destravado.
+     * - "Enviar e-mail" só destrava depois dos dois passos
+     *   anteriores resolvidos: o link da planilha (só no modo
+     *   "planilha" — sem nenhum [[texto]] no corpo, ou no modo
+     *   "corpo" onde ele nem chega a virar link, não há nada
+     *   esperando resolução por aqui) e this._coversChecked (ver
+     *   markCoversChecked()).
+     * Uma dica ao passar o mouse nos botões desabilitados explica o
      * que falta.
      */
     updateModeAvailability() {
@@ -925,14 +929,34 @@ const ReportSend = {
 
         }
 
+        const isPlanilha = this._mode === "planilha";
+
+        const placeholder = this.findPlaceholder();
+        const placeholderHref = placeholder ? (placeholder.getAttribute("href") || "") : "";
+        const linkPendente = !!placeholder && (placeholderHref === "#" || placeholderHref === "");
+        const sheetPendente = isPlanilha && linkPendente;
+
+        const sheetCheck = document.getElementById("reportSendUpdateSheetCheck");
+
+        if (sheetCheck) sheetCheck.style.display = (isPlanilha && !linkPendente) ? "" : "none";
+
+        const coversBtn = document.getElementById("reportSendCoversBtn");
+
+        if (coversBtn) {
+
+            coversBtn.disabled = sheetPendente;
+
+            coversBtn.title = sheetPendente
+                ? "Clique em \"Atualizar planilha de destaque\" antes de baixar as capas."
+                : "";
+
+        }
+
         const coversCheck = document.getElementById("reportSendCoversCheck");
 
         if (coversCheck) coversCheck.style.display = this._coversChecked ? "" : "none";
 
         const sendBtn = document.getElementById("reportSendGmailBtn");
-        const placeholder = this.findPlaceholder();
-        const placeholderHref = placeholder ? (placeholder.getAttribute("href") || "") : "";
-        const linkPendente = !!placeholder && (placeholderHref === "#" || placeholderHref === "");
         const coversPendente = !this._coversChecked;
 
         sendBtn.disabled = linkPendente || coversPendente;

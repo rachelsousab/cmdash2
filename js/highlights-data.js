@@ -168,13 +168,50 @@ const HighlightsData = {
      * Normaliza todos os registros da planilha.
      * ======================================================
      */
+    /**
+     * ======================================================
+     * Quebra o campo Disquera em nomes individuais. Um lançamento
+     * pode pertencer a mais de uma gravadora (ex.: "The Orchard,
+     * Tratore") — nesse caso vira uma linha pra cada uma (ver
+     * normalize()). Sufixos corporativos soltos ("Inc", "LLC"...)
+     * são recolados no nome anterior, pra não quebrar gravadoras
+     * cujo nome tem vírgula (ex.: "Vydia, Inc").
+     * ======================================================
+     */
+    splitDisqueras(value) {
+
+        const parts = this.toString(value)
+            .split(",")
+            .map(part => part.trim())
+            .filter(Boolean);
+
+        const names = [];
+
+        parts.forEach(part => {
+
+            if (names.length && /^(inc\.?|llc|ltd\.?|ltda\.?)$/i.test(part)) {
+
+                names[names.length - 1] += `, ${part}`;
+
+                return;
+
+            }
+
+            if (!names.includes(part)) names.push(part);
+
+        });
+
+        return names.length ? names : [""];
+
+    },
+
     normalize() {
 
-        this.rows = this.rawData.map(row => {
+        this.rows = this.rawData.flatMap(row => {
 
             const data = this.parseDate(row["Data/semana"]);
 
-            return {
+            const base = {
 
                 pais: this.toString(row["País"]),
 
@@ -187,8 +224,6 @@ const HighlightsData = {
                 artist: this.toString(row["Artist"]),
 
                 contenido: this.toString(row["Contenido"]),
-
-                disquera: this.toString(row["Disquera"]),
 
                 ownerMajor: this.toString(row["Owner / Major"]),
 
@@ -205,6 +240,8 @@ const HighlightsData = {
                     : ""
 
             };
+
+            return this.splitDisqueras(row["Disquera"]).map(disquera => ({ ...base, disquera }));
 
         }).filter(row => row.pais !== "" || row.disquera !== "");
 

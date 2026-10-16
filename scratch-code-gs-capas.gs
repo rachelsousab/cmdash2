@@ -284,22 +284,40 @@ function findGroupFolders(weekFolder, groupCodesArr, groupCountryNames) {
 }
 
 /**
- * Faz o parse de um nome de arquivo no padrão "PAÍS(ES) -
- * Playlist - Artista.jpg" (artista é opcional — 2 ou 3 blocos).
- * Retorna null se o arquivo não seguir o padrão.
+ * Faz o parse de um nome de arquivo e devolve as leituras
+ * possíveis de "quem é a Playlist e quem é o Artista". O time de
+ * capas já usou as duas ordens:
+ *   "BR - Playlist - Artista.jpg"   (padrão original)
+ *   "BR - Artista - Playlist.jpg"   (ordem invertida, vista na
+ *                                    pasta BRASIL de 16/10/2026)
+ * Aceita hífen, meia-risca e travessão como separador. Retorna
+ * null se o arquivo não seguir nenhum dos dois padrões.
+ *
+ * "original" = playlist no 2º bloco; "invertida" = playlist no
+ * ÚLTIMO bloco (só existe com 3+ blocos — com 2 blocos não há
+ * artista, então só vale a leitura original).
  */
 function parseStandardFilename(filename) {
 
   const base = filename.replace(/\.[a-zA-Z]+$/, "");
 
-  const parts = base.split(" - ").map(p => p.trim()).filter(Boolean);
+  const parts = base.split(/\s+[-–—]\s+/).map(p => p.trim()).filter(Boolean);
 
   if (parts.length < 2) return null;
 
-  return {
+  const original = {
     playlist: parts[1],
-    artist: parts[2] || ""
+    artist: parts.slice(2).join(" - ")
   };
+
+  const invertida = parts.length >= 3
+    ? {
+        playlist: parts[parts.length - 1],
+        artist: parts.slice(1, -1).join(" - ")
+      }
+    : null;
+
+  return { original, invertida };
 
 }
 
@@ -311,10 +329,17 @@ function parseStandardFilename(filename) {
  * do resultado já encontrado (assim um mesmo arquivo encontrado
  * uma vez serve pra conferir o artista de várias linhas
  * diferentes do mesmo grupo).
+ *
+ * A ordem original (Playlist - Artista) tem prioridade: só se
+ * NENHUM arquivo bater por ela é que vale um arquivo na ordem
+ * invertida (Artista - Playlist). Assim um nome de artista igual
+ * ao de outra playlist não rouba o lugar de uma capa no padrão.
  */
 function findCoverFile(groupFolders, playlist) {
 
   const playlistNorm = normalize(playlist);
+
+  let porOrdemInvertida = null;
 
   for (const folder of groupFolders) {
 
@@ -330,15 +355,23 @@ function findCoverFile(groupFolders, playlist) {
 
       if (!parsed) continue;
 
-      if (normalize(parsed.playlist) === playlistNorm) {
-        return { file, parsedArtist: parsed.artist };
+      if (normalize(parsed.original.playlist) === playlistNorm) {
+        return { file, parsedArtist: parsed.original.artist };
+      }
+
+      if (
+        !porOrdemInvertida &&
+        parsed.invertida &&
+        normalize(parsed.invertida.playlist) === playlistNorm
+      ) {
+        porOrdemInvertida = { file, parsedArtist: parsed.invertida.artist };
       }
 
     }
 
   }
 
-  return null;
+  return porOrdemInvertida;
 
 }
 

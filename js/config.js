@@ -223,6 +223,11 @@ const CONFIG = {
 
         formatos: [],
 
+        // Prefixo fixo do Descritivo: aparece travado na frente do
+        // campo e entra sempre na UTM — a pessoa digita só o que vem
+        // depois dele.
+        prefijoDescriptivo: "mkt-",
+
         // Trecho do nome da campanha deduzido da URL de destino (o
         // "playlist" de "...-brand-playlist-..."). A primeira regra
         // cujo texto aparecer na URL vale; sem regra batendo, o trecho

@@ -7214,3 +7214,77 @@ input.maf-locked, textarea.maf-locked{
     }
 
 }
+
+/* UTM Maker — campo com prefixo fixo (Descritivo) */
+
+.utm-prefixed{
+
+    display:flex;
+
+    align-items:stretch;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    background:white;
+
+    overflow:hidden;
+
+    transition:border-color .15s, box-shadow .15s;
+
+}
+
+.utm-prefixed:hover{
+
+    border-color:#C7CCD6;
+
+}
+
+.utm-prefixed:focus-within{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 3px rgba(227,6,19,.12);
+
+}
+
+.utm-prefix{
+
+    display:flex;
+
+    align-items:center;
+
+    padding:0 4px 0 12px;
+
+    background:#F2F2F5;
+
+    color:var(--text-light);
+
+    font-family:ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+
+    font-size:.85rem;
+
+    user-select:none;
+
+}
+
+.utm-field .utm-prefixed input{
+
+    border:none;
+
+    border-radius:0;
+
+    box-shadow:none;
+
+    padding-left:4px;
+
+    background:white;
+
+}
+
+.utm-field .utm-prefixed input:focus{
+
+    box-shadow:none;
+
+}

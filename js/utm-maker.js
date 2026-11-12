@@ -81,7 +81,38 @@ const UtmMaker = {
 
     },
 
+    getPrefix() {
+
+        return (CONFIG.UTM && CONFIG.UTM.prefijoDescriptivo) || "";
+
+    },
+
+    /**
+     * Só a parte digitável do Descritivo (o prefixo fixo fica de fora).
+     * Se a pessoa colar o texto já com o prefixo ("mkt-promo"), ele é
+     * tirado pra não sair duplicado.
+     */
+    descriptivoSuffix(raw) {
+
+        const prefix = this.getPrefix();
+
+        let text = String(raw || "").trim();
+
+        if (prefix && text.toLowerCase().startsWith(prefix.toLowerCase())) {
+
+            text = text.slice(prefix.length);
+
+        }
+
+        return this.slug(text);
+
+    },
+
     populateSelects() {
+
+        const prefixEl = document.getElementById("utmDescriptivoPrefix");
+
+        if (prefixEl) prefixEl.textContent = this.getPrefix();
 
         this.selects.forEach(({ id, list, optional }) => {
 
@@ -200,7 +231,7 @@ const UtmMaker = {
             medium: val("utmMedium"),
             proveedor: val("utmProveedor"),
             accion: val("utmAccion"),
-            descriptivo: this.slug(val("utmDescriptivo")),
+            descriptivo: this.descriptivoSuffix(val("utmDescriptivo")),
             genero: val("utmGenero"),
             formato: val("utmFormato")
 
@@ -299,7 +330,9 @@ const UtmMaker = {
             proveedor: state.proveedor,
             accion: state.accion,
             tipo: this.detectTipo(state.url),
-            descriptivo: state.descriptivo,
+            // Sem nada digitado, o trecho inteiro some (senão a campanha
+            // terminaria só com o prefixo solto, "...-mkt-").
+            descriptivo: state.descriptivo ? this.getPrefix() + state.descriptivo : "",
             genero: state.genero,
             formato: state.formato
 

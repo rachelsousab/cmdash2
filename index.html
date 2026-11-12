@@ -18,7 +18,7 @@
          mexer em qualquer .js/.css, troque esse valor (ex.: data de
          hoje + letra) em TODOS os <script src="js/..."> e no
          <link href="css/style.css">. -->
-    <link rel="stylesheet" href="css/style.css?v=20261112a">
+    <link rel="stylesheet" href="css/style.css?v=20261112b">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -2267,7 +2267,7 @@
         <h2>UTM Maker</h2>
 
         <div class="section-header-actions">
-            <button type="button" id="utmClearBtn" class="data-table-csv-btn">Limpiar</button>
+            <button type="button" id="utmClearBtn" class="data-table-csv-btn">Limpar</button>
         </div>
 
     </div>
@@ -2281,7 +2281,7 @@
         <div class="utm-field">
             <label for="utmUrl">URL de destino <span class="maf-required">*</span></label>
             <input type="text" id="utmUrl" placeholder="https://" autocomplete="off" spellcheck="false">
-            <p class="utm-error" id="utmUrlError" style="display:none;">Ingresa una URL válida que empiece con http:// o https://</p>
+            <p class="utm-error" id="utmUrlError" style="display:none;">Informe uma URL válida, começando com http:// ou https://</p>
         </div>
 
     </section>
@@ -2295,17 +2295,17 @@
         <div class="utm-grid">
 
             <div class="utm-field">
-                <label for="utmFecha">Fecha <span class="maf-required">*</span></label>
+                <label for="utmFecha">Data <span class="maf-required">*</span></label>
                 <input type="date" id="utmFecha">
             </div>
 
             <div class="utm-field">
-                <label for="utmPais">Pais <span class="maf-required">*</span></label>
+                <label for="utmPais">País <span class="maf-required">*</span></label>
                 <select id="utmPais"></select>
             </div>
 
             <div class="utm-field">
-                <label for="utmSource">Herramienta (utm_source) <span class="maf-required">*</span></label>
+                <label for="utmSource">Ferramenta (utm_source) <span class="maf-required">*</span></label>
                 <select id="utmSource"></select>
             </div>
 
@@ -2315,22 +2315,22 @@
             </div>
 
             <div class="utm-field">
-                <label for="utmProveedor">Proveedor <span class="maf-required">*</span></label>
+                <label for="utmProveedor">Fornecedor <span class="maf-required">*</span></label>
                 <select id="utmProveedor"></select>
             </div>
 
             <div class="utm-field">
-                <label for="utmAccion">Acción <span class="maf-required">*</span></label>
+                <label for="utmAccion">Ação <span class="maf-required">*</span></label>
                 <select id="utmAccion"></select>
             </div>
 
             <div class="utm-field">
-                <label for="utmDescriptivo">Descriptivo (opcional)</label>
+                <label for="utmDescriptivo">Descritivo (opcional)</label>
                 <input type="text" id="utmDescriptivo" autocomplete="off" spellcheck="false">
             </div>
 
             <div class="utm-field">
-                <label for="utmGenero">Género (opcional)</label>
+                <label for="utmGenero">Gênero (opcional)</label>
                 <select id="utmGenero"></select>
             </div>
 
@@ -2352,12 +2352,12 @@
         <div class="utm-result-grid">
 
             <div class="utm-field">
-                <label>UTM Completa</label>
+                <label>UTM completa</label>
                 <div class="utm-output utm-output--empty" id="utmQueryOut">—</div>
             </div>
 
             <div class="utm-field">
-                <label>Nombre de la campaña</label>
+                <label>Nome da campanha</label>
                 <div class="utm-output utm-output--empty" id="utmCampaignOut">—</div>
             </div>
 
@@ -2365,11 +2365,11 @@
 
         <div class="utm-final-head">
 
-            <h3>URL Final</h3>
+            <h3>URL final</h3>
 
-            <button type="button" id="utmTestBtn" class="data-table-link-btn" disabled>Probar</button>
+            <button type="button" id="utmTestBtn" class="data-table-link-btn" disabled>Testar</button>
 
-            <button type="button" id="utmCopyBtn" class="data-table-csv-btn" disabled>Copiar Enlace</button>
+            <button type="button" id="utmCopyBtn" class="data-table-csv-btn" disabled>Copiar link</button>
 
         </div>
 
@@ -2670,15 +2670,15 @@
             <h4>Como usar</h4>
 
             <ul class="manual-list">
-                <li>Cole a <strong>URL de destino</strong> e preencha os campos obrigatórios (com *): Fecha,
-                    Pais, Herramienta (utm_source), Canal (utm_medium), Proveedor e Acción. Descriptivo, Género
+                <li>Cole a <strong>URL de destino</strong> e preencha os campos obrigatórios (com *): Data,
+                    País, Ferramenta (utm_source), Canal (utm_medium), Fornecedor e Ação. Descritivo, Gênero
                     e Formato são opcionais.</li>
                 <li>O <strong>nome da campanha</strong> sai montado sozinho, na ordem: data (AAAAMMDD) – país –
-                    proveedor – acción – tipo (deduzido da URL, ex.: <code>playlist</code>) – descriptivo –
-                    género – formato. Dentro de cada trecho, tudo vai em minúsculas, sem acento, espaço nem
+                    fornecedor – ação – tipo (deduzido da URL, ex.: <code>playlist</code>) – descritivo –
+                    gênero – formato. Dentro de cada trecho, tudo vai em minúsculas, sem acento, espaço nem
                     símbolo.</li>
-                <li><strong>Probar</strong> abre o link final em outra aba; <strong>Copiar Enlace</strong>
-                    copia o link. <strong>Limpiar</strong> volta o formulário ao início.</li>
+                <li><strong>Testar</strong> abre o link final em outra aba; <strong>Copiar link</strong>
+                    copia o link. <strong>Limpar</strong> volta o formulário ao início.</li>
             </ul>
 
             <p>
@@ -2854,73 +2854,73 @@
     <!-- JAVASCRIPT -->
     <!-- ========================================================= -->
 
-    <script src="js/config.js?v=20261112a"></script>
+    <script src="js/config.js?v=20261112b"></script>
 
-    <script src="js/actions-merge.js?v=20261112a"></script>
+    <script src="js/actions-merge.js?v=20261112b"></script>
 
-    <script src="js/data.js?v=20261112a"></script>
+    <script src="js/data.js?v=20261112b"></script>
 
-    <script src="js/metrics.js?v=20261112a"></script>
+    <script src="js/metrics.js?v=20261112b"></script>
 
-    <script src="js/goals.js?v=20261112a"></script>
+    <script src="js/goals.js?v=20261112b"></script>
 
-    <script src="js/social-data.js?v=20261112a"></script>
+    <script src="js/social-data.js?v=20261112b"></script>
 
-    <script src="js/social-metrics.js?v=20261112a"></script>
+    <script src="js/social-metrics.js?v=20261112b"></script>
 
-    <script src="js/social-table.js?v=20261112a"></script>
+    <script src="js/social-table.js?v=20261112b"></script>
 
-    <script src="js/social-form.js?v=20261112a"></script>
+    <script src="js/social-form.js?v=20261112b"></script>
 
-    <script src="js/social-recent-table.js?v=20261112a"></script>
+    <script src="js/social-recent-table.js?v=20261112b"></script>
 
-    <script src="js/social-insights.js?v=20261112a"></script>
+    <script src="js/social-insights.js?v=20261112b"></script>
 
-    <script src="js/social-charts.js?v=20261112a"></script>
+    <script src="js/social-charts.js?v=20261112b"></script>
 
-    <script src="js/social-dashboard.js?v=20261112a"></script>
+    <script src="js/social-dashboard.js?v=20261112b"></script>
 
-    <script src="js/data-table.js?v=20261112a"></script>
+    <script src="js/data-table.js?v=20261112b"></script>
 
-    <script src="js/highlights-data.js?v=20261112a"></script>
+    <script src="js/highlights-data.js?v=20261112b"></script>
 
-    <script src="js/highlights-metrics.js?v=20261112a"></script>
+    <script src="js/highlights-metrics.js?v=20261112b"></script>
 
-    <script src="js/highlights-charts.js?v=20261112a"></script>
+    <script src="js/highlights-charts.js?v=20261112b"></script>
 
-    <script src="js/highlights-dashboard.js?v=20261112a"></script>
+    <script src="js/highlights-dashboard.js?v=20261112b"></script>
 
-    <script src="js/analises-metrics.js?v=20261112a"></script>
+    <script src="js/analises-metrics.js?v=20261112b"></script>
 
-    <script src="js/analises-dashboard.js?v=20261112a"></script>
+    <script src="js/analises-dashboard.js?v=20261112b"></script>
 
-    <script src="js/report-dashboard.js?v=20261112a"></script>
+    <script src="js/report-dashboard.js?v=20261112b"></script>
 
-    <script src="js/report-cover-download.js?v=20261112a"></script>
+    <script src="js/report-cover-download.js?v=20261112b"></script>
 
-    <script src="js/report-recipients-data.js?v=20261112a"></script>
+    <script src="js/report-recipients-data.js?v=20261112b"></script>
 
-    <script src="js/report-send.js?v=20261112a"></script>
+    <script src="js/report-send.js?v=20261112b"></script>
 
-    <script src="js/pivot-data.js?v=20261112a"></script>
+    <script src="js/pivot-data.js?v=20261112b"></script>
 
-    <script src="js/pivot-dashboard.js?v=20261112a"></script>
+    <script src="js/pivot-dashboard.js?v=20261112b"></script>
 
-    <script src="js/artist-data.js?v=20261112a"></script>
+    <script src="js/artist-data.js?v=20261112b"></script>
 
-    <script src="js/artist-dashboard.js?v=20261112a"></script>
+    <script src="js/artist-dashboard.js?v=20261112b"></script>
 
-    <script src="js/utm-maker.js?v=20261112a"></script>
+    <script src="js/utm-maker.js?v=20261112b"></script>
 
-    <script src="js/manual-actions.js?v=20261112a"></script>
+    <script src="js/manual-actions.js?v=20261112b"></script>
 
-    <script src="js/canal500-data.js?v=20261112a"></script>
+    <script src="js/canal500-data.js?v=20261112b"></script>
 
-    <script src="js/canal500-form.js?v=20261112a"></script>
+    <script src="js/canal500-form.js?v=20261112b"></script>
 
-    <script src="js/auth.js?v=20261112a"></script>
+    <script src="js/auth.js?v=20261112b"></script>
 
-    <script src="js/app.js?v=20261112a"></script>
+    <script src="js/app.js?v=20261112b"></script>
 
 </body>
 

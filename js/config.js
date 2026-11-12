@@ -196,17 +196,17 @@ const CONFIG = {
             { label: "Brasil", value: "br" },
             { label: "Argentina", value: "ar" },
             { label: "Chile", value: "cl" },
-            { label: "Colombia", value: "co" },
+            { label: "Colômbia", value: "co" },
             { label: "Costa Rica", value: "cr" },
-            { label: "Ecuador", value: "ec" },
+            { label: "Equador", value: "ec" },
             { label: "El Salvador", value: "sv" },
             { label: "Guatemala", value: "gt" },
             { label: "Honduras", value: "hn" },
-            { label: "Nicaragua", value: "ni" },
-            { label: "Paraguay", value: "py" },
+            { label: "Nicarágua", value: "ni" },
+            { label: "Paraguai", value: "py" },
             { label: "Peru", value: "pe" },
-            { label: "R. Dominicana", value: "do" },
-            { label: "Uruguay", value: "uy" }
+            { label: "República Dominicana", value: "do" },
+            { label: "Uruguai", value: "uy" }
         ],
 
         herramientas: ["clarotv"],

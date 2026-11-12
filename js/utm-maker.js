@@ -93,7 +93,7 @@ const UtmMaker = {
 
             if (optional) {
 
-                select.appendChild(new Option("— ninguno —", ""));
+                select.appendChild(new Option("— nenhum —", ""));
 
             }
 
@@ -376,7 +376,7 @@ const UtmMaker = {
 
     copyText(text, btn) {
 
-        const finish = ok => this.flashButton(btn, ok ? "✔ Copiado!" : "No se pudo copiar");
+        const finish = ok => this.flashButton(btn, ok ? "✔ Copiado!" : "Não foi possível copiar");
 
         if (this.copyWithTextarea(text)) {
 

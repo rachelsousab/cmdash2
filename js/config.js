@@ -176,6 +176,76 @@ const CONFIG = {
     },
 
     /* ==========================================
+       UTM MAKER (js/utm-maker.js)
+       ------------------------------------------
+       LISTAS PROVISÓRIAS — a lista completa de
+       cada campo entra depois. Pra completar, é só
+       editar aqui; nenhum outro código muda.
+
+       Cada opção pode ser:
+       - um texto simples ("canal 500"): o que vai
+         na UTM é o mesmo texto em minúsculas, sem
+         acento, espaço ou símbolo ("canal500");
+       - { label, value }: quando o que aparece no
+         select é diferente do que vai na UTM (ex.:
+         "Branding" -> "brand", "Brasil" -> "br").
+    ========================================== */
+    UTM: {
+
+        paises: [
+            { label: "Brasil", value: "br" },
+            { label: "Argentina", value: "ar" },
+            { label: "Chile", value: "cl" },
+            { label: "Colombia", value: "co" },
+            { label: "Costa Rica", value: "cr" },
+            { label: "Ecuador", value: "ec" },
+            { label: "El Salvador", value: "sv" },
+            { label: "Guatemala", value: "gt" },
+            { label: "Honduras", value: "hn" },
+            { label: "Nicaragua", value: "ni" },
+            { label: "Paraguay", value: "py" },
+            { label: "Peru", value: "pe" },
+            { label: "R. Dominicana", value: "do" },
+            { label: "Uruguay", value: "uy" }
+        ],
+
+        herramientas: ["clarotv"],
+
+        canales: ["canal 500"],
+
+        proveedores: ["imusica"],
+
+        acciones: [
+            { label: "Branding", value: "brand" }
+        ],
+
+        generos: [],
+
+        formatos: [],
+
+        // Trecho do nome da campanha deduzido da URL de destino (o
+        // "playlist" de "...-brand-playlist-..."). A primeira regra
+        // cujo texto aparecer na URL vale; sem regra batendo, o trecho
+        // é omitido.
+        tiposDeUrl: [
+            { contem: "/systemPlaylist/", value: "playlist" }
+        ],
+
+        // Ordem dos trechos no nome da campanha, separados por "-".
+        ordemCampanha: [
+            "fecha",
+            "pais",
+            "proveedor",
+            "accion",
+            "tipo",
+            "descriptivo",
+            "genero",
+            "formato"
+        ]
+
+    },
+
+    /* ==========================================
        AUTENTICAÇÃO
 
        Trava simples de acesso, NÃO é autenticação

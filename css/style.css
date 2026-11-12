@@ -7038,3 +7038,179 @@ input.maf-locked, textarea.maf-locked{
     background:#E4E7EC;
 
 }
+
+/* ===========================================================
+   UTM MAKER
+=========================================================== */
+
+.utm-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+
+    gap:18px 22px;
+
+}
+
+.utm-result-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+
+    gap:18px 22px;
+
+}
+
+.utm-field{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+
+    min-width:0;
+
+}
+
+.utm-field label{
+
+    font-size:.72rem;
+
+    font-weight:600;
+
+    color:var(--text-light);
+
+    text-transform:uppercase;
+
+    letter-spacing:.3px;
+
+}
+
+.utm-field input,
+.utm-field select{
+
+    width:100%;
+
+    height:40px;
+
+    border:1px solid var(--border);
+
+    border-radius:8px;
+
+    padding:0 12px;
+
+    background:white;
+
+    font-size:.85rem;
+
+    font-family:inherit;
+
+    color:var(--text);
+
+    transition:border-color .15s, box-shadow .15s;
+
+}
+
+.utm-field input:hover,
+.utm-field select:hover{
+
+    border-color:#C7CCD6;
+
+}
+
+.utm-field input:focus,
+.utm-field select:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 3px rgba(227,6,19,.12);
+
+}
+
+.utm-error{
+
+    margin:0;
+
+    font-size:.72rem;
+
+    color:var(--primary);
+
+}
+
+.utm-output{
+
+    min-height:48px;
+
+    padding:13px 16px;
+
+    background:var(--background);
+
+    border:1px dashed #C7CCD6;
+
+    border-radius:10px;
+
+    font-family:ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+
+    font-size:.82rem;
+
+    line-height:1.5;
+
+    color:var(--text);
+
+    word-break:break-all;
+
+}
+
+.utm-output--empty{
+
+    color:var(--text-light);
+
+}
+
+.utm-final-head{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+    margin-top:6px;
+
+}
+
+.utm-final-head h3{
+
+    margin:0 6px 0 0;
+
+    font-size:.95rem;
+
+}
+
+@media (max-width:900px){
+
+    .utm-grid{
+
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+@media (max-width:600px){
+
+    .utm-grid,
+    .utm-result-grid{
+
+        grid-template-columns:minmax(0, 1fr);
+
+    }
+
+}

@@ -412,6 +412,12 @@ setActivePage(page) {
 
     }
 
+    if (page === "utm") {
+
+        UtmMaker.init();
+
+    }
+
     if (page === "canal500") {
 
         (Canal500Data.isLoaded()
